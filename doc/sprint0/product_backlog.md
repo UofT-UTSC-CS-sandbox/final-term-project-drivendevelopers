@@ -1,4 +1,3 @@
-
 User Stories:
 
 1. As a new student, I want to enter my university email on the sign-up page, so I can start the registration process.
@@ -49,30 +48,18 @@ User Stories:
 
 24. As a student user, I want to be notified when I get a connection to join my project, so I can promptly answer their request to join.
 
-25. As a student project member, I want to see project information such as files, links and information bout my team members so I have access to the project and can contact my teammates. 
-
-
+25. As a student project member, I want to see project information such as files, links and information bout my team members so I have access to the project and can contact my teammates.
 
 Features:
-  
-  - Account creation, sign in, sign up, Auth (Not considered a feature)
-  
-  - Profile management, add personal information, academic information, contact information
-  
-  - Connect with students, requesting and accepting new connections, seeing their profiles and contact informations
-  
-  - Creating projects and having people join and collaborate, sharing contact information and such
-  
-  - Recommendation system based on profiles and classes taken
-  
-  - Notification system 
 
+- Account creation, sign in, sign up, Auth (Not considered a feature)
 
-Notes:
+- Profile management, add personal information, academic information, contact information
 
-  - We can use GPT for recommendation summaries 
-  - We will use Neo4JS for recommending people
-  - We will use an Auth0 API for authentication
-  - Figure out a way to store images for profile pictures 
-  - At least 3 personas based on the template they gave
+- Connect with students, requesting and accepting new connections, seeing their profiles and contact informations
 
+- Creating projects and having people join and collaborate, sharing contact information and such
+
+- Recommendation system based on profiles and classes taken
+
+- Notification system
