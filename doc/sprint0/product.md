@@ -10,23 +10,24 @@ https://www.figma.com/design/ATltAkGHbIjEbyVQvHETMP/Basic-Design-for-Edu-Prodigi
 Target Users:
 
 The primary users of our platform are students at various stages of their academic and professional journeys, including:
-    1. Undergraduate Students: Seeking help with coursework, tutoring, and project collaboration.
-    2. Graduate Students: Looking for advanced academic support, research collaboration, and career advice.
-    3. Career-focused Students: Needing mentorship, networking opportunities, and professional development resources.
-    4. Student Organizations and Clubs: Organizing events and finding volunteers or collaborators.
+1. Undergraduate Students: Seeking help with coursework, tutoring, and project collaboration.
+2. Graduate Students: Looking for advanced academic support, research collaboration, and career advice.
+3. Career-focused Students: Needing mentorship, networking opportunities, and professional development resources.
+4. Student Organizations and Clubs: Organizing events and finding volunteers or collaborators.
 
 
 
 Why Students Will Choose Our Platform:
 
 Efficient Access to Resources
-    Students can quickly identify and access the support they need across four key areas:
-    1. Academic Assistance: Peer tutoring, study groups, and resource libraries.
-    2. Project Collaboration: Opportunities to participate in or initiate projects.
-    3. Career Guidance: Mentorship and professional development, through networking.
-    4. Networking: Building connections with peers and professionals.
+Students can quickly identify and access the support they need across four key areas:
+1. Academic Assistance: Peer tutoring, study groups, and resource libraries.
+2. Project Collaboration: Opportunities to participate in or initiate projects.
+3. Career Guidance: Mentorship and professional development, through networking.
+4. Networking: Building connections with peers and professionals.
+
 Intelligent Matching System
-    An algorithm ensures that students' needs are met by connecting them with peers or professionals who can offer the most relevant support.
+An algorithm ensures that students' needs are met by connecting them with peers or professionals who can offer the most relevant support.
 
 
 
