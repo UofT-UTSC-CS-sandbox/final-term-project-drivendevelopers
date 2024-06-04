@@ -2,34 +2,34 @@ Product Overview:
 
 Our platform is a dynamic, student-focused ecosystem designed to facilitate academic support, project collaboration, career enhancement, and networking among students. By seamlessly connecting students seeking assistance with peers who possess the necessary skills and knowledge, the platform promotes a self-sustaining community of mutual aid and growth.
 
-Figma mock sketches: 
+Figma user journey:
+https://www.figma.com/board/cRDp1MdVNvNGoomPVlsCX4/User-Journey-for-Edu-Prodigi?node-id=0-1&t=dq4UNz1y6XBrSK1k-1
+
+Figma mock sketches:
 https://www.figma.com/design/ATltAkGHbIjEbyVQvHETMP/Basic-Design-for-Edu-Prodigi?node-id=2-5830&t=jsjWPOwjrHS7tINQ-0
-
-
 
 Target Users:
 
 The primary users of our platform are students at various stages of their academic and professional journeys, including:
+
 1. Undergraduate Students: Seeking help with coursework, tutoring, and project collaboration.
 2. Graduate Students: Looking for advanced academic support, research collaboration, and career advice.
 3. Career-focused Students: Needing mentorship, networking opportunities, and professional development resources.
 4. Student Organizations and Clubs: Organizing events and finding volunteers or collaborators.
 
-
-
 Why Students Will Choose Our Platform:
 
 Efficient Access to Resources
 Students can quickly identify and access the support they need across four key areas:
+
 1. Academic Assistance: Peer tutoring, study groups, and resource libraries.
 2. Project Collaboration: Opportunities to participate in or initiate projects.
 3. Career Guidance: Mentorship and professional development, through networking.
 4. Networking: Building connections with peers and professionals.
 
 Intelligent Matching System
+
 - An algorithm ensures that students' needs are met by connecting them with peers or professionals who can offer the most relevant support.
-
-
 
 Key Insights and Decisions:
 
@@ -38,8 +38,6 @@ Key Insights and Decisions:
 
     Balancing Demand and Supply
     Recognizing that students have both needs and capabilities, we designed the platform to facilitate a balanced exchange of services. This ensures that students can both seek help and offer support, fostering a reciprocal community.
-
-
 
 Enabling Students Helping Students:
 
@@ -51,8 +49,6 @@ Enabling Students Helping Students:
 
     Networking Opportunities
     By fostering a community of learners and professionals, the platform enables students to build valuable relationships and expand their networks, enhancing both academic and career prospects.
-
-
 
 Supporting System Features:
 
@@ -72,7 +68,7 @@ Supporting System Features:
     - Recommended Connections: View recommended users based on shared characteristics and
     mutual connections.
     - Notifications: Receive notifications for connection requests and recommendations.
-    
+
     Project Collaboration
     - Create and Join Projects: Propose new projects, browse, filter, and join existing projects.
     - Project Management: View profiles of those wanting to join projects and decide on their
@@ -84,8 +80,6 @@ Supporting System Features:
 
     Notification System
     - Real-Time Notifications: For connection requests, project join requests, and recommended connections.
-
-
 
 Motivating the Supply Side:
 
