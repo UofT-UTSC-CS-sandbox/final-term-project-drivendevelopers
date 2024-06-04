@@ -38,7 +38,7 @@ export default function LoginRegister() {
       <ToastContainer />
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h1 className="text-4xl font-bold mb-4">Welcome to YourApp</h1>
+          <h1 className="text-4xl font-bold mb-4">Welcome to Edu Prodigi</h1>
           <p className="text-lg">
             Please {isLogin ? "login" : "sign up"} to continue.
           </p>
