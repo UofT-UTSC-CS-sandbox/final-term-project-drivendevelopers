@@ -27,7 +27,7 @@ Students can quickly identify and access the support they need across four key a
 4. Networking: Building connections with peers and professionals.
 
 Intelligent Matching System
-An algorithm ensures that students' needs are met by connecting them with peers or professionals who can offer the most relevant support.
+- An algorithm ensures that students' needs are met by connecting them with peers or professionals who can offer the most relevant support.
 
 
 
