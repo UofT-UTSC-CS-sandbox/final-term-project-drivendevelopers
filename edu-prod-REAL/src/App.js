@@ -2,11 +2,11 @@
 
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Login from './Login';
-import Register from './Register';
+import Login from './signupLogin/Login';
+import Register from './signupLogin/Register';
 import Dashboard from './Dashboard';
-import ProfileView from './ProfileView';
-import EditProfileForm from './EditProfileForm';
+import ProfileView from './profile/ProfileView';
+import EditProfileForm from './profile/EditProfileForm';
 
 const App = () => {
   return (
