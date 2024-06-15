@@ -22,7 +22,8 @@ const Login = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: '#000', color: '#fff' }}>
-      <h1 style={{ fontFamily: 'Impact', fontSize: '5rem', color: '#ff4d4f', marginBottom: '1.5rem' }}>Edu-Prodigi</h1>
+      <h1 style={{ fontFamily: 'Impact', fontSize: '5rem', color: '#ff4d4f', marginBottom: '.2rem' }}>Edu-Prodigi</h1>
+      <h1 style={{ fontFamily: 'cursive', fontSize: '2rem', color: '#FFFFFF', marginBottom: '1.5rem' }}>A resource for students.</h1>
       <h2 style={{ marginBottom: '1.5rem' }}>Login</h2>
       <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '300px' }}>
         <div style={{ marginBottom: '1rem', width: '100%' }}>
