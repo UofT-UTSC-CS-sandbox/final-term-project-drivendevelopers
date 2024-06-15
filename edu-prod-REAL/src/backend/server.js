@@ -6,6 +6,7 @@ const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const User = require('./User');
+const Project = require('./Project');
 
 const app = express();
 app.use(express.json());
@@ -88,6 +89,54 @@ app.post('/login', async (req, res) => {
     res.json({ token, user: { id: user._id, email: user.email } });
   } catch (err) {
     console.error('Error logging in:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Save project endpoint
+app.post('/api/projects', authenticateToken, async (req, res) => {
+  const { projectName, description, link, } = req.body;
+
+  try {
+    // Create a new project associated with the authenticated user
+    const newProject = new Project({
+      projectName,
+      description,
+      link,
+      user: req.user.id,
+    });
+
+    await newProject.save();
+    res.status(201).json({ message: 'Project added successfully', project: newProject });
+  } catch (err) {
+    console.error('Error adding project:', err.message);
+    res.status(500).json({ message: 'Error adding project' });
+  }
+});
+
+// Get all projects for user
+app.get('/api/projects', authenticateToken, async (req, res) => {
+  try {
+    const projects = await Project.find({ user: req.user.id });
+    res.status(200).json(projects);
+  } catch (err) {
+    console.error('Error fetching projects:', err.message);
+    res.status(500).json({ message: 'Error fetching projects' });
+  }
+});
+
+// Delete project endpoint
+app.delete('/api/projects/:projectId', authenticateToken, async (req, res) => {
+  try {
+    const project = await Project.findOneAndDelete({ _id: req.params.projectId, user: req.user.id });
+
+    if (!project) {
+      return res.status(404).json({ message: 'Project not found' });
+    }
+
+    res.status(200).json({ message: 'Project deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting project:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });

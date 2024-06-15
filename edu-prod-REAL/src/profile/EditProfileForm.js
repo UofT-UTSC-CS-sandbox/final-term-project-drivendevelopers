@@ -13,7 +13,7 @@ const styles = {
   },
   formTitle: {
     fontFamily: 'Impact, sans-serif',
-    fontSize: '4rem',
+    fontSize: '5rem',
     color: '#ff4d4f',
     marginBottom: '1.5rem',
   },
@@ -30,6 +30,7 @@ const styles = {
   formLabel: {
     marginBottom: '0.5rem',
     fontSize: '1.2rem',
+    fontWeight: 'bold',
   },
   formInput: {
     padding: '10px',
@@ -47,8 +48,9 @@ const styles = {
     backgroundColor: '#ff4d4f',
     color: '#fff',
     cursor: 'pointer',
-    fontSize: '1rem',
+    fontSize: '1.5rem',
     marginTop: '1rem',
+    fontWeight: 'bold',
   },
   backButton: {
     padding: '10px 20px',
@@ -57,8 +59,9 @@ const styles = {
     backgroundColor: '#333',
     color: '#fff',
     cursor: 'pointer',
-    fontSize: '1rem',
+    fontSize: '1.5rem',
     marginTop: '1rem',
+    fontWeight: 'bold',
   },
 };
 
@@ -148,7 +151,7 @@ const EditProfileForm = () => {
       <h1 style={styles.formTitle}>Edit Profile</h1>
       <form onSubmit={handleSubmit} style={styles.form}>
         <div style={styles.formGroup}>
-          <label style={styles.formLabel}>Full Name:</label>
+          <label style={styles.formLabel}>Full Name</label>
           <input
             type="text"
             value={fullName}
@@ -157,7 +160,7 @@ const EditProfileForm = () => {
           />
         </div>
         <div style={styles.formGroup}>
-          <label style={styles.formLabel}>Program Name:</label>
+          <label style={styles.formLabel}>Program Name</label>
           <input
             type="text"
             value={programName}
@@ -166,7 +169,7 @@ const EditProfileForm = () => {
           />
         </div>
         <div style={styles.formGroup}>
-          <label style={styles.formLabel}>Year of Study:</label>
+          <label style={styles.formLabel}>Year of Study</label>
           <input
             type="text"
             value={yearOfStudy}
@@ -175,7 +178,7 @@ const EditProfileForm = () => {
           />
         </div>
         <div style={styles.formGroup}>
-          <label style={styles.formLabel}>GPA:</label>
+          <label style={styles.formLabel}>GPA</label>
           <input
             type="text"
             value={gpa}
@@ -184,7 +187,7 @@ const EditProfileForm = () => {
           />
         </div>
         <div style={styles.formGroup}>
-          <label style={styles.formLabel}>Description:</label>
+          <label style={styles.formLabel}>Description</label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}

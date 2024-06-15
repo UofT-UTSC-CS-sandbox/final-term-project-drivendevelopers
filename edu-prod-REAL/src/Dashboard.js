@@ -44,8 +44,7 @@ const Dashboard = () => {
   };
 
   const handleProjects = () => {
-    // Handle projects button click
-    console.log('Projects button clicked');
+    navigate('/project-list');
   };
 
   const handleLogout = () => {
@@ -70,10 +69,10 @@ const Dashboard = () => {
         </div>
         {!isCollapsed && (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-            <button onClick={handleProfileView} style={{ marginBottom: '1rem', padding: '10px 20px', borderRadius: '20px', border: 'none', backgroundColor: '#ff4d4f', color: '#fff', cursor: 'pointer', fontSize: '1.5rem' }}>View Profile</button>
-            <button onClick={handleConnect} style={{ marginBottom: '1rem', padding: '10px 20px', borderRadius: '20px', border: 'none', backgroundColor: '#ff4d4f', color: '#fff', cursor: 'pointer', fontSize: '1.5rem' }}>Connect</button>
-            <button onClick={handleProjects} style={{ marginBottom: '1rem', padding: '10px 20px', borderRadius: '20px', border: 'none', backgroundColor: '#ff4d4f', color: '#fff', cursor: 'pointer', fontSize: '1.5rem' }}>Projects</button>
-            <button onClick={handleLogout} style={{ padding: '10px 20px', borderRadius: '20px', border: 'none', backgroundColor: '#ffd166', color: '#333', cursor: 'pointer', fontSize: '1.5rem' }}>Logout</button>
+            <button onClick={handleProfileView} style={{ marginBottom: '1rem', padding: '10px 20px', borderRadius: '20px', border: 'none', backgroundColor: '#ff4d4f', color: '#fff', cursor: 'pointer', fontSize: '1.5rem', fontWeight: 'bold' }}>View Profile</button>
+            <button onClick={handleConnect} style={{ marginBottom: '1rem', padding: '10px 20px', borderRadius: '20px', border: 'none', backgroundColor: '#ff4d4f', color: '#fff', cursor: 'pointer', fontSize: '1.5rem', fontWeight: 'bold' }}>Connect</button>
+            <button onClick={handleProjects} style={{ marginBottom: '1rem', padding: '10px 20px', borderRadius: '20px', border: 'none', backgroundColor: '#ff4d4f', color: '#fff', cursor: 'pointer', fontSize: '1.5rem', fontWeight: 'bold' }}>Projects</button>
+            <button onClick={handleLogout} style={{ padding: '10px 20px', borderRadius: '20px', border: 'none', backgroundColor: '#ffd166', color: '#333', cursor: 'pointer', fontSize: '1.5rem', fontWeight: 'bold' }}>Logout</button>
           </div>
         )}
       </div>
