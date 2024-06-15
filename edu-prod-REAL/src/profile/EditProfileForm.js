@@ -48,6 +48,17 @@ const styles = {
     color: '#fff',
     cursor: 'pointer',
     fontSize: '1rem',
+    marginTop: '1rem',
+  },
+  backButton: {
+    padding: '10px 20px',
+    borderRadius: '20px',
+    border: 'none',
+    backgroundColor: '#333',
+    color: '#fff',
+    cursor: 'pointer',
+    fontSize: '1rem',
+    marginTop: '1rem',
   },
 };
 
@@ -128,6 +139,10 @@ const EditProfileForm = () => {
     setProfilePicture(event.target.files[0]);
   };
 
+  const handleBack = () => {
+    navigate('/profile-view');
+  };
+
   return (
     <div style={styles.formContainer}>
       <h1 style={styles.formTitle}>Edit Profile</h1>
@@ -182,6 +197,9 @@ const EditProfileForm = () => {
         </div>
         <button type="submit" style={styles.formButton}>
           Save
+        </button>
+        <button type="button" onClick={handleBack} style={styles.backButton}>
+          Back to Profile
         </button>
       </form>
     </div>
