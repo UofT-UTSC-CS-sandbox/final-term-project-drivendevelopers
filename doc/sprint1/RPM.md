@@ -1,12 +1,11 @@
 # Release Planning Meeting Document (RPM.md)
 
-## Release Goal
-The goal of this release is to develop and deploy the initial version of the Edu Prodigi platform. This platform will include essential features to project collaboration and networking among students, as well as features for students to effectively manage their academic affairs. The release will focus on delivering a functional product that enables students to create accounts, manage profiles, connect with peers, and collaborate on projects.
+## Release Goal (for Sprint 1)
+The goal of this release is to develop and deploy the initial version of the Edu Prodigi platform. This platform will include essential features to project collaboration and networking among students, as well as features for students to effectively manage their academic affairs. The release will focus on delivering a functional product that enables students to create accounts, manage their profile, and add projects to their accounts.
 
 ## Scope of the Project
 
 ## Timeline
-
 ### Sprint 1 (June 7th - June 14th, 2024)
 
 #### User Registration and Authentication
