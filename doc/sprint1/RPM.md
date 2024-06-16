@@ -16,6 +16,8 @@ The goal of this release is to develop and deploy the initial version of the Edu
 - **DRIV-23: Display error message for invalid university email**
   - Assigned to: Shahrokh Artaman
   - Completion Date: June 10th, 2024
+ 
+#### Projects Feature
 - **DRIV-24: Add projects to account**
   - Assigned to: Harish Thevakumaran
   - Completion Date: June 11th, 2024
