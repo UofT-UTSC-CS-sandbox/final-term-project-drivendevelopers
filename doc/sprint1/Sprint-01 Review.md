@@ -4,20 +4,17 @@
 
 ## Iteration 01 - Review & Retrospect
 
- * **When:** June 13th, 2024
+ * **When:** June 15th, 2024
  * **Where:** Online via Zoom
 
 ## Process - Reflection
 
-During this iteration, our team worked on developing the core infrastructure for the Edu Prodigi platform, focusing on user registration and authentication, profile management, and the projects tab.
+During this iteration, our team worked on developing the core infrastructure for the Edu Prodigi platform, focusing on user registration and authentication, profile management, and the projects feature.
 
 #### Decisions that turned out well
 
 1. **Regular Online Meetings:**
-   - Our decision to have regular online meetings on Zoom every Sunday and Wednesday at 5:30 pm turned out to be very effective. These meetings allowed us to understand each other's roles and responsibilities, identify and resolve blockers quickly, and ensure alignment with iteration goals.
-
-2. **Weekly Sync Meetings:**
-   - The quick sync meetings every Monday morning at 9:00 am were very useful for planning the week’s tasks. They helped us maintain a clear and updated schedule, which contributed to timely task completion.
+   - Our decision to have daily online meetings on Zoom at 5:30 pm turned out to be very effective. These meetings allowed us to understand each other's roles and responsibilities, identify and resolve blockers quickly, and ensure alignment with iteration goals.
 
 3. **Use of Task Boards:**
    - Utilizing Jira for task boards was successful in visualizing the progress of our tasks. It provided a clear view of what was completed, in progress, or pending, facilitating better task management and accountability.
@@ -42,24 +39,19 @@ During this iteration, our team worked on developing the core infrastructure for
 
 #### Goals and/or tasks that were met/completed:
 
-1. **Login and Signup Implementation (Tamam Makki):**
+1. **Login and Signup Implementation (Hamza Khalid):**
    - Completed the development and integration of a secure login and signup system.
-   - **Artifacts:** [Login and Signup System Documentation]
 
 2. **Database Configuration (Shahrokh Artaman):**
    - Successfully set up and configured the database to support user profiles and project data.
-   - **Artifacts:** [Database Schema and Configuration]
 
-3. **Profile Management (Harish Thevakumaran):**
+3. **Profile Management (Tamam Makki):**
    - Developed the profile management feature where users can edit and update their information.
-   - **Artifacts:** [Profile Management Feature Documentation]
-
-#### Goals and/or tasks that were planned but not met/completed:
-
-1. **Projects Tab (Hamza Khalid):**
-   - The Projects tab for initiating and joining project collaborations was not fully completed. The task was delayed due to unexpected technical difficulties and the need for additional database configuration.
-   - **Reason:** Technical challenges and additional database requirements.
-   - **Planned Completion:** Next iteration.
+  
+4. **Projects Tab (Harish Thevakumaran):**
+   - Developed the Projects tab for creating and adding projects to a user's profile.
+   
+#### Goals and/or tasks that were planned but not met/completed: N/A
 
 ## Meeting Highlights
 
@@ -70,9 +62,6 @@ Going into the next iteration, our main insights are:
 
 2. **Documentation Must Be Up-to-date:**
    - Keeping our documentation current is essential for tracking progress and making informed decisions. We need to allocate time specifically for documentation updates.
-
-3. **Focus on Unfinished Tasks:**
-   - Completing the Projects tab should be a priority in the next iteration to ensure that all core features of the platform are functional.
 
 4. **Continual Improvement of Processes:**
    - Regularly evaluating and refining our processes will help us become more efficient and effective as a team.
