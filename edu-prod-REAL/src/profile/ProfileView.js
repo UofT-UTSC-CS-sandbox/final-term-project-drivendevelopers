@@ -119,7 +119,7 @@ const ProfileView = () => {
         <div style={styles.profilePanel}>
           {profileData.profilePicture && (
             <img
-              src={profileData.profilePicture}
+              src={'http://localhost:5000/api/profile/${profileData.profilePicture}'}
               alt="Profile"
               style={styles.profileImage}
             />

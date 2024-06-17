@@ -7,13 +7,15 @@ const multer = require('multer');
 const path = require('path');
 const User = require('./User');
 const Project = require('./Project');
+require('dotenv').config();
+const uploadFolder = process.env.UPLOADS_DIR
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
 const PORT = process.env.PORT || 5000;
-const MONGO_URI = 'mongodb+srv://c01Project:EduProd1@cluster0.ieebveo.mongodb.net/your_database_name?retryWrites=true&w=majority';
+const MONGO_URI = 'mongodb+srv://c01Project:EduProd1@cluster0.ieebveo.mongodb.net/edu-prod?retryWrites=true&w=majority';
 
 // Connect to MongoDB
 mongoose.connect(MONGO_URI, {
@@ -38,18 +40,21 @@ const authenticateToken = (req, res, next) => {
 // Setting up Multer for profile picture upload
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/');
+    cb(null, uploadFolder);
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`
-    cb(null, `${uniqueSuffix}-${file.originalname}`);
+    console.log(file.filename);
+    cb(null, `${uniqueSuffix}-${file.filename}`);
   }
 });
 
 const upload = multer({ storage });
 
+console.log(uploadFolder);
+console.log(path.join(__dirname, '../../uploads'));
 // Serve static files from uploads folder
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Register endpoint
 app.post('/register', async (req, res) => {
