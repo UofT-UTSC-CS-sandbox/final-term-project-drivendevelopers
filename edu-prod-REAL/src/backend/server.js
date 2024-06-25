@@ -8,7 +8,7 @@ const path = require('path');
 const User = require('./User');
 const Project = require('./Project');
 require('dotenv').config();
-const uploadFolder = process.env.UPLOADS_DIR
+//const uploadFolder = process.env.UPLOADS_DIR
 
 const app = express();
 app.use(express.json());
@@ -16,7 +16,6 @@ app.use(cors());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const PORT = process.env.PORT || 5000;
-const MONGO_URI = 'mongodb+srv://c01Project:EduProd1@cluster0.ieebveo.mongodb.net/edu-prod?retryWrites=true&w=majority';
 const MONGO_URI = 'mongodb+srv://c01Project:EduProd1@cluster0.ieebveo.mongodb.net/edu-prod?retryWrites=true&w=majority';
 
 mongoose.connect(MONGO_URI, {
