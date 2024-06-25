@@ -7,8 +7,10 @@ const userSchema = new mongoose.Schema({
   programName: { type: String, default: 'Program' },
   yearOfStudy: { type: String, default: 'Year' },
   gpa: { type: Number, default: 0.0 },
-  description: { type: String, default: 'About me' },  // Add description field
-  profilePicture: { type: String }  // Add profile picture field
+  description: { type: String, default: 'About me' },
+  profilePicture: { type: String },
+  interests: { type: [String], default: [] },
+  courses: { type: [String], default: [] },
 });
 
 const User = mongoose.model('User', userSchema);

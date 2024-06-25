@@ -4,9 +4,9 @@ import { useNavigate } from 'react-router-dom';
 const styles = {
   container: {
     padding: '20px',
-    backgroundColor: '#000', // Dark theme background color
-    color: '#dee2e6', // Dark theme text color
-    minHeight: '100vh', // Full height of the viewport
+    backgroundColor: '#000', 
+    color: '#dee2e6', 
+    minHeight: '100vh', 
     boxSizing: 'border-box',
     display: 'flex',
     flexDirection: 'column',
@@ -43,18 +43,18 @@ const styles = {
   },
   projectListContainer: {
     width: '100%',
-    maxHeight: 'calc(100vh - 180px)', // Adjust to leave space for header and footer
-    overflowY: 'auto', // Vertical scroll
+    maxHeight: 'calc(100vh - 180px)', 
+    overflowY: 'auto', 
     marginTop: '20px',
   },
   projectPanel: {
-    position: 'relative', // Needed for the delete button positioning
+    position: 'relative', 
     padding: '20px',
     borderRadius: '10px',
-    backgroundColor: '#454d55', // Darker background color
+    backgroundColor: '#454d55', 
     boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
     marginBottom: '20px',
-    cursor: 'default', // Remove the cursor pointer
+    cursor: 'default', 
     transition: 'background-color 0.3s ease',
   },
   deleteButton: {
@@ -127,7 +127,7 @@ const ProjectList = () => {
       }
 
       const data = await response.json();
-      setProjects(data); // Assuming the response is an array of projects directly
+      setProjects(data); 
     } catch (error) {
       console.error('Error fetching projects:', error);
     }
@@ -156,7 +156,7 @@ const ProjectList = () => {
         throw new Error('Failed to delete project');
       }
 
-      // Remove the deleted project from the state
+  
       setProjects(projects.filter((project) => project._id !== projectId));
     } catch (error) {
       console.error('Error deleting project:', error);
@@ -181,7 +181,7 @@ const ProjectList = () => {
               <button
                 style={styles.deleteButton}
                 onClick={(e) => {
-                  e.stopPropagation(); // Prevent the panel click event from triggering
+                  e.stopPropagation(); 
                   handleDeleteProject(project._id);
                 }}
               >

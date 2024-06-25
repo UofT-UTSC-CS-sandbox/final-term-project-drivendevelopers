@@ -6,10 +6,12 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'center',
-    height: '100vh',
+    justifyContent: 'flex-start',
+    minHeight: '100vh', // Ensure it covers the full viewport height
     backgroundColor: '#000',
     color: '#fff',
+    padding: '20px', // Add padding for better spacing
+    boxSizing: 'border-box',
   },
   formTitle: {
     fontFamily: 'Impact, sans-serif',
@@ -63,7 +65,48 @@ const styles = {
     marginTop: '1rem',
     fontWeight: 'bold',
   },
+  interestCheckbox: {
+    display: 'block',
+    marginBottom: '5px',
+  },
+  courseContainer: {
+    marginTop: '10px',
+    display: 'flex',
+    flexDirection: 'column',
+    width: '100%',
+  },
+  courseItem: {
+    display: 'flex',
+    alignItems: 'center',
+    marginTop: '5px',
+    justifyContent: 'space-between',
+    backgroundColor: '#333',
+    borderRadius: '10px',
+    padding: '5px 10px',
+  },
+  removeButton: {
+    backgroundColor: '#ff4d4f',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '5px',
+    padding: '5px 10px',
+    cursor: 'pointer',
+  },
+  profilePicturePreview: {
+    marginTop: '10px',
+    width: '100px',
+    height: '100px',
+    borderRadius: '50%',
+  },
 };
+
+const academicInterests = [
+  'Computer Science',
+  'Mathematics',
+  'Physics',
+  'Chemistry',
+  'Biology',
+];
 
 const EditProfileForm = () => {
   const [programName, setProgramName] = useState('');
@@ -72,6 +115,10 @@ const EditProfileForm = () => {
   const [gpa, setGpa] = useState('');
   const [description, setDescription] = useState('');
   const [profilePicture, setProfilePicture] = useState(null);
+  const [profilePictureUrl, setProfilePictureUrl] = useState('');
+  const [selectedInterests, setSelectedInterests] = useState([]);
+  const [courses, setCourses] = useState('');
+  const [coursesList, setCoursesList] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -99,6 +146,9 @@ const EditProfileForm = () => {
       setYearOfStudy(data.yearOfStudy);
       setGpa(data.gpa);
       setDescription(data.description);
+      setProfilePictureUrl(data.profilePicture);
+      setSelectedInterests(data.interests || []);
+      setCoursesList(data.courses || []);
     } catch (error) {
       console.error('Error fetching profile:', error);
     }
@@ -115,6 +165,8 @@ const EditProfileForm = () => {
       formData.append('yearOfStudy', yearOfStudy);
       formData.append('gpa', gpa);
       formData.append('description', description);
+      formData.append('interests', JSON.stringify(selectedInterests));
+      formData.append('courses', JSON.stringify(coursesList));
 
       if (profilePicture) {
         formData.append('profilePicture', profilePicture);
@@ -129,7 +181,8 @@ const EditProfileForm = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to update profile');
+        const errorMessage = await response.text();
+        throw new Error(`Failed to update profile: ${errorMessage}`);
       }
 
       navigate('/profile-view');
@@ -144,6 +197,31 @@ const EditProfileForm = () => {
 
   const handleBack = () => {
     navigate('/profile-view');
+  };
+
+  const handleInterestChange = (event) => {
+    const value = event.target.value;
+    setSelectedInterests(
+      selectedInterests.includes(value)
+        ? selectedInterests.filter((interest) => interest !== value)
+        : [...selectedInterests, value]
+    );
+  };
+
+  const handleCoursesChange = (event) => {
+    setCourses(event.target.value);
+  };
+
+  const handleCoursesKeyPress = (event) => {
+    if (event.key === 'Enter' && courses.trim()) {
+      setCoursesList([...coursesList, courses.trim()]);
+      setCourses('');
+      event.preventDefault();
+    }
+  };
+
+  const handleCourseRemove = (index) => {
+    setCoursesList(coursesList.filter((_, i) => i !== index));
   };
 
   return (
@@ -195,18 +273,67 @@ const EditProfileForm = () => {
           />
         </div>
         <div style={styles.formGroup}>
-          <label style={styles.formLabel}>Profile Picture:</label>
-          <input type="file" onChange={handleFileChange} />
-        </div>
-        <button type="submit" style={styles.formButton}>
-          Save
-        </button>
-        <button type="button" onClick={handleBack} style={styles.backButton}>
-          Back to Profile
-        </button>
-      </form>
-    </div>
-  );
-};
-
-export default EditProfileForm;
+          <label style={styles.formLabel}>Academic Interests</label>
+          <div>
+            {academicInterests.map((interest) => (
+              <label key={interest} style={styles.interestCheckbox}>
+                <input
+                  type="checkbox"
+                  value={interest}
+                  checked={selectedInterests.includes(interest)}
+                  onChange={handleInterestChange}
+                  style={{ marginRight: '10px' }}
+                  />
+                  {interest}
+                </label>
+              ))}
+            </div>
+          </div>
+          <div style={styles.formGroup}>
+            <label style={styles.formLabel}>Courses</label>
+            <input
+              type="text"
+              value={courses}
+              onChange={handleCoursesChange}
+              onKeyPress={handleCoursesKeyPress}
+              style={styles.formInput}
+            />
+            <div style={styles.courseContainer}>
+              {coursesList.map((course, index) => (
+                <div key={index} style={styles.courseItem}>
+                  <span>{course}</span>
+                  <button
+                    type="button"
+                    onClick={() => handleCourseRemove(index)}
+                    style={styles.removeButton}
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div style={styles.formGroup}>
+            <label style={styles.formLabel}>Profile Picture</label>
+            <input type="file" onChange={handleFileChange} />
+            {profilePictureUrl && (
+              <img
+                src={`http://localhost:5000${profilePictureUrl}`}
+                alt="Profile"
+                style={styles.profilePicturePreview}
+              />
+            )}
+          </div>
+          <button type="submit" style={styles.formButton}>
+            Save
+          </button>
+          <button type="button" onClick={handleBack} style={styles.backButton}>
+            Back to Profile
+          </button>
+        </form>
+      </div>
+    );
+  };
+  
+  export default EditProfileForm;
+  

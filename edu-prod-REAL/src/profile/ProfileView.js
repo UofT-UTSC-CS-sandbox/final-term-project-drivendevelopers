@@ -36,6 +36,12 @@ const styles = {
     marginBottom: '1rem',
     fontSize: '1.2rem',
   },
+  profilePicture: {
+    width: '150px',
+    height: '150px',
+    borderRadius: '50%',
+    marginBottom: '1rem',
+  },
   profileButton: {
     marginTop: '1rem',
     padding: '10px 20px',
@@ -58,12 +64,6 @@ const styles = {
     fontSize: '1.5rem',
     fontWeight: 'bold',
   },
-  profileImage: {
-    width: '150px',
-    height: '150px',
-    borderRadius: '50%',
-    marginBottom: '1rem',
-  },
 };
 
 const ProfileView = () => {
@@ -80,7 +80,7 @@ const ProfileView = () => {
       const response = await fetch('http://localhost:5000/api/profile', {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
@@ -117,14 +117,14 @@ const ProfileView = () => {
       <h1 style={styles.profileTitle}>Profile View</h1>
       {profileData ? (
         <div style={styles.profilePanel}>
-          {profileData.profilePicture && (
-            <img
-              src={profileData.profilePicture}
-              alt="Profile"
-              style={styles.profileImage}
-            />
-          )}
           <div style={styles.profileDetails}>
+            {profileData.profilePicture && (
+              <img
+                src={`http://localhost:5000${profileData.profilePicture}`}
+                alt="Profile"
+                style={styles.profilePicture}
+              />
+            )}
             <p style={styles.profileItem}><strong>Email:</strong> {profileData.email}</p>
             <p style={styles.profileItem}><strong>Full Name:</strong> {profileData.fullName}</p>
             <p style={styles.profileItem}><strong>Program:</strong> {profileData.program}</p>

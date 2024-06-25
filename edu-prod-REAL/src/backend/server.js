@@ -11,11 +11,11 @@ const Project = require('./Project');
 const app = express();
 app.use(express.json());
 app.use(cors());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const PORT = process.env.PORT || 5000;
-const MONGO_URI = 'mongodb+srv://c01Project:EduProd1@cluster0.ieebveo.mongodb.net/your_database_name?retryWrites=true&w=majority';
+const MONGO_URI = 'mongodb+srv://c01Project:EduProd1@cluster0.ieebveo.mongodb.net/edu-prod?retryWrites=true&w=majority';
 
-// Connect to MongoDB
 mongoose.connect(MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -23,7 +23,6 @@ mongoose.connect(MONGO_URI, {
 .then(() => console.log('MongoDB connected'))
 .catch(err => console.error('MongoDB connection error:', err));
 
-// Middleware to authenticate JWT token
 const authenticateToken = (req, res, next) => {
   const token = req.headers['authorization'] && req.headers['authorization'].split(' ')[1];
   if (!token) return res.sendStatus(401);
@@ -35,23 +34,17 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-// Setting up Multer for profile picture upload
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
+  destination: function (req, file, cb) {
     cb(null, 'uploads/');
   },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`
-    cb(null, `${uniqueSuffix}-${file.originalname}`);
+  filename: function (req, file, cb) {
+    cb(null, `${Date.now()}-${file.originalname}`);
   }
 });
 
-const upload = multer({ storage });
+const upload = multer({ storage: storage });
 
-// Serve static files from uploads folder
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// Register endpoint
 app.post('/register', async (req, res) => {
   const { email, password, confirmPassword } = req.body;
 
@@ -64,7 +57,7 @@ app.post('/register', async (req, res) => {
   }
 
   try {
-    const hashedPassword = await bcrypt.hash(password, 12); // Increase rounds as needed
+    const hashedPassword = await bcrypt.hash(password, 12);
     const newUser = new User({ email, password: hashedPassword });
     await newUser.save();
     res.status(201).json({ message: 'User registered successfully' });
@@ -74,7 +67,6 @@ app.post('/register', async (req, res) => {
   }
 });
 
-// Login endpoint
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
@@ -93,12 +85,10 @@ app.post('/login', async (req, res) => {
   }
 });
 
-// Save project endpoint
 app.post('/api/projects', authenticateToken, async (req, res) => {
-  const { projectName, description, link, } = req.body;
+  const { projectName, description, link } = req.body;
 
   try {
-    // Create a new project associated with the authenticated user
     const newProject = new Project({
       projectName,
       description,
@@ -114,7 +104,6 @@ app.post('/api/projects', authenticateToken, async (req, res) => {
   }
 });
 
-// Get all projects for user
 app.get('/api/projects', authenticateToken, async (req, res) => {
   try {
     const projects = await Project.find({ user: req.user.id });
@@ -125,7 +114,6 @@ app.get('/api/projects', authenticateToken, async (req, res) => {
   }
 });
 
-// Delete project endpoint
 app.delete('/api/projects/:projectId', authenticateToken, async (req, res) => {
   try {
     const project = await Project.findOneAndDelete({ _id: req.params.projectId, user: req.user.id });
@@ -141,20 +129,20 @@ app.delete('/api/projects/:projectId', authenticateToken, async (req, res) => {
   }
 });
 
-// Update user profile endpoint
 app.put('/api/profile', authenticateToken, upload.single('profilePicture'), async (req, res) => {
-  const { fullName, programName, yearOfStudy, gpa, description } = req.body;
+  const { fullName, programName, yearOfStudy, gpa, description, interests, courses } = req.body;
 
   try {
     const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ message: 'User not found' });
 
-    // Update user profile fields
     user.programName = programName;
     user.yearOfStudy = yearOfStudy;
     user.fullName = fullName;
     user.gpa = gpa;
     user.description = description;
+    user.interests = JSON.parse(interests);
+    user.courses = JSON.parse(courses);
 
     if (req.file) {
       user.profilePicture = `/uploads/${req.file.filename}`;
@@ -168,7 +156,6 @@ app.put('/api/profile', authenticateToken, upload.single('profilePicture'), asyn
   }
 });
 
-// Get user profile endpoint
 app.get('/api/profile', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -182,6 +169,8 @@ app.get('/api/profile', authenticateToken, async (req, res) => {
       yearOfStudy: user.yearOfStudy,
       description: user.description,
       profilePicture: user.profilePicture,
+      interests: user.interests,
+      courses: user.courses,
     };
 
     res.status(200).json(profileData);

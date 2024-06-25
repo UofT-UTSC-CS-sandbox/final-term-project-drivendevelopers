@@ -81,7 +81,6 @@ const AddProject = () => {
       });
 
       if (response.ok) {
-        // Navigate back to the project list or show a success message
         navigate('/project-list');
       } else {
         console.error('Failed to add project');
