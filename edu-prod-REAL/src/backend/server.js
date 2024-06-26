@@ -8,7 +8,6 @@ const path = require('path');
 const User = require('./User');
 const Project = require('./Project');
 require('dotenv').config();
-//const uploadFolder = process.env.UPLOADS_DIR
 
 const app = express();
 app.use(express.json());
@@ -179,6 +178,25 @@ app.get('/api/profile', authenticateToken, async (req, res) => {
   } catch (err) {
     console.error('Error fetching profile:', err.message);
     res.status(500).json({ message: 'Error fetching profile' });
+  }
+});
+
+app.post('/api/search-users', authenticateToken, async (req, res) => {
+  const { name, interests, hobbies, program, year } = req.body;
+  const query = {};
+
+  if (name) query.fullName = { $regex: name, $options: 'i' };
+  if (interests) query.interests = { $regex: interests, $options: 'i' };
+  if (hobbies) query.hobbies = { $regex: hobbies, $options: 'i' };
+  if (program) query.programName = { $regex: program, $options: 'i' };
+  if (year) query.yearOfStudy = year;
+
+  try {
+    const users = await User.find(query);
+    res.json(users);
+  } catch (error) {
+    console.error('Error searching users:', error);
+    res.status(500).json({ message: 'Error searching users' });
   }
 });
 

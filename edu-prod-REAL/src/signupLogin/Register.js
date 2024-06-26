@@ -2,6 +2,72 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+const styles = {
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100vh',
+    backgroundColor: '#f7f7f7',  // Matched background color with Dashboard and Login
+    color: '#000',  // Matched text color with Dashboard and Login
+    padding: '20px',
+    boxSizing: 'border-box',
+  },
+  title: {
+    fontFamily: 'Impact',
+    fontSize: '5rem',
+    color: '#007bff',  // Adjusted color for title
+    marginBottom: '0.2rem',
+  },
+  subtitle: {
+    fontFamily: 'cursive',
+    fontSize: '2rem',
+    color: '#555',  // Matched subtitle color with Dashboard and Login
+    marginBottom: '1.5rem',
+  },
+  formContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    width: '300px',
+  },
+  input: {
+    padding: '10px',
+    borderRadius: '20px',
+    border: 'none',
+    width: '100%',
+    marginBottom: '1rem',
+    backgroundColor: '#fff',  // Matched input background with Dashboard and Login
+    color: '#000',  // Matched input text color with Dashboard and Login
+    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',  // Added slight shadow for depth
+  },
+  button: {
+    padding: '10px 20px',
+    borderRadius: '20px',
+    border: 'none',
+    backgroundColor: '#007bff',
+    color: '#fff',
+    cursor: 'pointer',
+    fontSize: '1rem',
+    marginTop: '1rem',
+    width: '100%',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',  // Added slight shadow for consistency
+  },
+  loginButton: {
+    marginTop: '1rem',
+    padding: '10px 20px',
+    borderRadius: '20px',
+    border: 'none',
+    backgroundColor: '#555',  // Matched color with Dashboard and Login theme
+    color: '#fff',
+    cursor: 'pointer',
+    fontSize: '1rem',
+    width: '15%',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',  // Added slight shadow for consistency
+  },
+};
+
 const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -28,44 +94,38 @@ const Register = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', backgroundColor: '#000', color: '#fff' }}>
-      <h1 style={{ fontFamily: 'Impact', fontSize: '5rem', color: '#ff4d4f', marginBottom: '.2rem' }}>Edu-Prodigi</h1>
-      <h1 style={{ fontFamily: 'cursive', fontSize: '2rem', color: '#FFFFFF', marginBottom: '1.5rem' }}>A resource for students.</h1>
-      <h2 style={{ marginBottom: '1.5rem' }}>Register</h2>
-      <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '300px' }}>
-        <div style={{ marginBottom: '1rem', width: '100%' }}>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email (must be @mail.utoronto.ca)"
-            style={{ padding: '10px', borderRadius: '20px', border: 'none', width: '100%', marginBottom: '0.5rem', backgroundColor: '#333', color: '#fff' }}
-            required
-          />
-        </div>
-        <div style={{ marginBottom: '1rem', width: '100%' }}>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
-            style={{ padding: '10px', borderRadius: '20px', border: 'none', width: '100%', marginBottom: '0.5rem', backgroundColor: '#333', color: '#fff' }}
-            required
-          />
-        </div>
-        <div style={{ marginBottom: '1rem', width: '100%' }}>
-          <input
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            placeholder="Confirm Password"
-            style={{ padding: '10px', borderRadius: '20px', border: 'none', width: '100%', marginBottom: '0.5rem', backgroundColor: '#333', color: '#fff' }}
-            required
-          />
-        </div>
-        <button type="submit" style={{ padding: '10px 20px', borderRadius: '20px', border: 'none', backgroundColor: '#ff4d4f', color: '#fff', cursor: 'pointer', fontSize: '1rem' }}>Register</button>
+    <div style={styles.container}>
+      <h1 style={styles.title}>Edu-Prodigi</h1>
+      <h1 style={styles.subtitle}>A resource for students.</h1>
+      <h2>Register</h2>
+      <form onSubmit={handleRegister} style={styles.formContainer}>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email (must be @mail.utoronto.ca)"
+          style={styles.input}
+          required
+        />
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Password"
+          style={styles.input}
+          required
+        />
+        <input
+          type="password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          placeholder="Confirm Password"
+          style={styles.input}
+          required
+        />
+        <button type="submit" style={styles.button}>Register</button>
       </form>
-      <button onClick={() => navigate('/')} style={{ marginTop: '1rem', padding: '10px 20px', borderRadius: '20px', border: 'none', backgroundColor: '#333', color: '#fff', cursor: 'pointer', fontSize: '1rem' }}>Back to Login</button>
+      <button onClick={() => navigate('/')} style={styles.loginButton}>Back to Login</button>
     </div>
   );
 };

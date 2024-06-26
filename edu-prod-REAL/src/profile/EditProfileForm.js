@@ -7,67 +7,74 @@ const styles = {
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    minHeight: '100vh', // Ensure it covers the full viewport height
-    backgroundColor: '#000',
-    color: '#fff',
-    padding: '20px', // Add padding for better spacing
+    minHeight: '100vh',
+    backgroundColor: '#f7f7f7',
+    color: '#000',
+    padding: '20px',
     boxSizing: 'border-box',
   },
   formTitle: {
-    fontFamily: 'Impact, sans-serif',
-    fontSize: '5rem',
-    color: '#ff4d4f',
-    marginBottom: '1.5rem',
+    fontSize: '3rem',
+    color: '#333',
+    marginBottom: '20px',
   },
   form: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    width: '300px',
+    width: '100%',
+    maxWidth: '500px',
   },
   formGroup: {
-    marginBottom: '1rem',
+    marginBottom: '20px',
     width: '100%',
   },
   formLabel: {
-    marginBottom: '0.5rem',
-    fontSize: '1.2rem',
-    fontWeight: 'bold',
+    marginBottom: '10px',
+    fontSize: '1.5rem',
+    color: '#000',
   },
   formInput: {
     padding: '10px',
-    borderRadius: '20px',
-    border: 'none',
+    borderRadius: '5px',
+    border: '1px solid #ccc',
     width: '100%',
-    marginBottom: '0.5rem',
-    backgroundColor: '#333',
-    color: '#fff',
+    fontSize: '1rem',
+  },
+  formTextarea: {
+    padding: '10px',
+    borderRadius: '5px',
+    border: '1px solid #ccc',
+    width: '100%',
+    fontSize: '1rem',
+    resize: 'vertical',
   },
   formButton: {
     padding: '10px 20px',
-    borderRadius: '20px',
+    borderRadius: '5px',
     border: 'none',
-    backgroundColor: '#ff4d4f',
+    backgroundColor: '#007bff',
     color: '#fff',
     cursor: 'pointer',
-    fontSize: '1.5rem',
-    marginTop: '1rem',
+    fontSize: '1rem',
     fontWeight: 'bold',
+    marginBottom: '10px',
   },
   backButton: {
     padding: '10px 20px',
-    borderRadius: '20px',
+    borderRadius: '5px',
     border: 'none',
     backgroundColor: '#333',
     color: '#fff',
     cursor: 'pointer',
-    fontSize: '1.5rem',
-    marginTop: '1rem',
+    fontSize: '1rem',
     fontWeight: 'bold',
   },
   interestCheckbox: {
-    display: 'block',
-    marginBottom: '5px',
+    display: 'inline-flex',
+    alignItems: 'center',
+    marginBottom: '10px',
+    fontSize: '1rem',
   },
   courseContainer: {
     marginTop: '10px',
@@ -80,23 +87,19 @@ const styles = {
     alignItems: 'center',
     marginTop: '5px',
     justifyContent: 'space-between',
-    backgroundColor: '#333',
-    borderRadius: '10px',
+    backgroundColor: '#fff',
+    borderRadius: '5px',
     padding: '5px 10px',
+    border: '1px solid #ccc',
   },
   removeButton: {
-    backgroundColor: '#ff4d4f',
+    backgroundColor: '#dc3545',
     color: '#fff',
     border: 'none',
     borderRadius: '5px',
     padding: '5px 10px',
     cursor: 'pointer',
-  },
-  profilePicturePreview: {
-    marginTop: '10px',
-    width: '100px',
-    height: '100px',
-    borderRadius: '50%',
+    fontSize: '0.9rem',
   },
 };
 
@@ -114,11 +117,10 @@ const EditProfileForm = () => {
   const [fullName, setFullName] = useState('');
   const [gpa, setGpa] = useState('');
   const [description, setDescription] = useState('');
-  const [profilePicture, setProfilePicture] = useState(null);
-  const [profilePictureUrl, setProfilePictureUrl] = useState('');
   const [selectedInterests, setSelectedInterests] = useState([]);
   const [courses, setCourses] = useState('');
   const [coursesList, setCoursesList] = useState([]);
+  const [profilePicture, setProfilePicture] = useState(null); // State to store profile picture file
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -146,9 +148,10 @@ const EditProfileForm = () => {
       setYearOfStudy(data.yearOfStudy);
       setGpa(data.gpa);
       setDescription(data.description);
-      setProfilePictureUrl(data.profilePicture);
       setSelectedInterests(data.interests || []);
       setCoursesList(data.courses || []);
+      // Optionally, set profile picture state if available
+      // setProfilePicture(data.profilePicture);
     } catch (error) {
       console.error('Error fetching profile:', error);
     }
@@ -167,7 +170,6 @@ const EditProfileForm = () => {
       formData.append('description', description);
       formData.append('interests', JSON.stringify(selectedInterests));
       formData.append('courses', JSON.stringify(coursesList));
-
       if (profilePicture) {
         formData.append('profilePicture', profilePicture);
       }
@@ -189,10 +191,6 @@ const EditProfileForm = () => {
     } catch (error) {
       console.error('Error updating profile:', error);
     }
-  };
-
-  const handleFileChange = (event) => {
-    setProfilePicture(event.target.files[0]);
   };
 
   const handleBack = () => {
@@ -222,6 +220,11 @@ const EditProfileForm = () => {
 
   const handleCourseRemove = (index) => {
     setCoursesList(coursesList.filter((_, i) => i !== index));
+  };
+
+  const handleProfilePictureChange = (event) => {
+    const file = event.target.files[0];
+    setProfilePicture(file);
   };
 
   return (
@@ -269,7 +272,7 @@ const EditProfileForm = () => {
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            style={{ ...styles.formInput, height: '100px', resize: 'none' }}
+            style={{ ...styles.formTextarea, height: '100px' }}
           />
         </div>
         <div style={styles.formGroup}>
@@ -283,57 +286,61 @@ const EditProfileForm = () => {
                   checked={selectedInterests.includes(interest)}
                   onChange={handleInterestChange}
                   style={{ marginRight: '10px' }}
-                  />
-                  {interest}
-                </label>
-              ))}
-            </div>
+                />
+                {interest}
+              </label>
+            ))}
           </div>
-          <div style={styles.formGroup}>
-            <label style={styles.formLabel}>Courses</label>
+        </div>
+        <div style={styles.formGroup}>
+          <label style={styles.formLabel}>Courses</label>
+          <input
+            type="text"
+            value={courses}
+            onChange={handleCoursesChange}
+            onKeyPress={handleCoursesKeyPress}
+            style={styles.formInput}
+          />
+          <div style={styles.courseContainer}>
+            {coursesList.map((course, index) => (
+              <div key={index} style={styles.courseItem}>
+                <span>{course}</span>
+                <button
+                  type="button"
+                  onClick={() => handleCourseRemove(index)}
+                  style={styles.removeButton}
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div style={styles.formGroup}>
+          <label style={styles.formLabel}>Profile Picture</label>
+          <div style={{ marginBottom: '10px' }}>
             <input
-              type="text"
-              value={courses}
-              onChange={handleCoursesChange}
-              onKeyPress={handleCoursesKeyPress}
-              style={styles.formInput}
+              type="file"
+              accept=".jpg,.jpeg,.png"
+              onChange={handleProfilePictureChange}
             />
-            <div style={styles.courseContainer}>
-              {coursesList.map((course, index) => (
-                <div key={index} style={styles.courseItem}>
-                  <span>{course}</span>
-                  <button
-                    type="button"
-                    onClick={() => handleCourseRemove(index)}
-                    style={styles.removeButton}
-                  >
-                    Remove
-                  </button>
-                </div>
-              ))}
+          </div>
+          {/* Optional: Show file name or other details */}
+          {/* {profilePicture && (
+            <div>
+              <p>File selected: {profilePicture.name}</p>
             </div>
-          </div>
-          <div style={styles.formGroup}>
-            <label style={styles.formLabel}>Profile Picture</label>
-            <input type="file" onChange={handleFileChange} />
-            {profilePictureUrl && (
-              <img
-                src={`http://localhost:5000${profilePictureUrl}`}
-                alt="Profile"
-                style={styles.profilePicturePreview}
-              />
-            )}
-          </div>
-          <button type="submit" style={styles.formButton}>
-            Save
-          </button>
-          <button type="button" onClick={handleBack} style={styles.backButton}>
-            Back to Profile
-          </button>
-        </form>
-      </div>
-    );
-  };
-  
-  export default EditProfileForm;
-  
+          )} */}
+        </div>
+        <button type="submit" style={styles.formButton}>
+          Save Changes
+        </button>
+        <button type="button" onClick={handleBack} style={styles.backButton}>
+          Back
+        </button>
+      </form>
+    </div>
+  );
+};
+
+export default EditProfileForm;

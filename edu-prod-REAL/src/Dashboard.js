@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 const styles = {
   dashboardContainer: {
@@ -21,6 +22,22 @@ const styles = {
     marginBottom: '20px',
     fontSize: '2.5rem',
     color: '#000',
+  },
+  navButtons: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '20px',  // Increased gap
+    fontSize: '1.5rem',
+    color: '#000',
+  },
+  navButton: {
+    background: 'none',
+    border: 'none',
+    color: '#000',
+    cursor: 'pointer',
+    textDecoration: 'none',
+    fontSize: 'inherit',
+    padding: '0',
   },
   column: {
     display: 'flex',
@@ -134,28 +151,38 @@ const Dashboard = () => {
     navigate(path);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token'); // Clear token from localStorage
+    navigate('/'); // Redirect to login page after logout
+  };
+
   return (
     <div style={styles.dashboardContainer}>
       <div style={styles.header}>
         <div>Edu Prodigi</div>
-        <div>
-          <span>Hello, {userName || 'User'}!</span>
-          <span>Profile | Connect | Projects</span>
+        <div style={styles.navButtons}>
+          <button style={styles.navButton} onClick={() => handleNavigation('/profile-view')}>Profile</button>
+          <button style={styles.navButton} onClick={() => handleNavigation('/connect')}>Connect</button>
+          <button style={styles.navButton} onClick={() => handleNavigation('/project-list')}>Projects</button>
+          <button style={styles.navButton} onClick={() => handleNavigation('/notifications')}>
+            <i className="fas fa-bell"></i>
+          </button>
+          <button style={styles.navButton} onClick={handleLogout}>
+            <i className="fas fa-sign-out-alt"></i> Logout
+          </button>
         </div>
       </div>
       <h1 style={styles.mainTitle}>Hello, {userName || 'User'}!</h1>
       <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
         <div style={styles.column}>
-          <h2 style={styles.subTitle}>Connect With</h2>
+          <h2 style={styles.subTitle}>Recommended Connections</h2>
           {/* Empty for now */}
         </div>
         <div style={styles.column}>
-          <h2 style={styles.subTitle}>Quick Actions</h2>
-          <button style={styles.button} onClick={() => handleNavigation('/connect')}>Connect</button>
-          <button style={styles.button} onClick={() => handleNavigation('/add-project')}>Create Project</button>
-          <button style={styles.button} onClick={() => handleNavigation('/project-list')}>View Projects</button>
-          <button style={styles.button} onClick={() => handleNavigation('/profile-view')}>My Profile</button>
-          <button style={styles.button} onClick={() => handleNavigation('/notifications')}>Notifications</button>
+          <h2 style={styles.subTitle}>Tools</h2>
+          <button style={styles.button} onClick={() => handleNavigation('/eventCalendar')}>Event Calendar</button>
+          <button style={styles.button} onClick={() => handleNavigation('/coursePlanner')}>Course Planner</button>
+          <button style={styles.button} onClick={() => handleNavigation('/gpaCalc')}>GPA Calculator</button>
         </div>
         <div style={styles.column}>
           <h2 style={styles.subTitle}>Current Projects</h2>

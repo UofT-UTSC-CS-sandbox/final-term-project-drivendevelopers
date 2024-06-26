@@ -8,12 +8,13 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: '100vh',
-    backgroundColor: '#000',
-    color: '#fff',
+    backgroundColor: '#f7f7f7',
+    color: '#000',
     padding: '20px',
+    boxSizing: 'border-box',
   },
   profilePanel: {
-    backgroundColor: '#333',
+    backgroundColor: '#fff',
     borderRadius: '10px',
     padding: '20px',
     maxWidth: '600px',
@@ -22,10 +23,9 @@ const styles = {
     marginBottom: '20px',
   },
   profileTitle: {
-    fontFamily: 'Impact, sans-serif',
-    fontSize: '5rem',
-    color: '#ff4d4f',
-    marginBottom: '1.5rem',
+    fontSize: '3rem',
+    color: '#333',
+    marginBottom: '20px',
   },
   profileDetails: {
     display: 'flex',
@@ -35,6 +35,7 @@ const styles = {
   profileItem: {
     marginBottom: '1rem',
     fontSize: '1.2rem',
+    color: '#555',
   },
   profilePicture: {
     width: '150px',
@@ -47,10 +48,10 @@ const styles = {
     padding: '10px 20px',
     borderRadius: '20px',
     border: 'none',
-    backgroundColor: '#ff4d4f',
+    backgroundColor: '#007bff',
     color: '#fff',
     cursor: 'pointer',
-    fontSize: '1.5rem',
+    fontSize: '1rem',
     fontWeight: 'bold',
   },
   backButton: {
@@ -61,7 +62,7 @@ const styles = {
     backgroundColor: '#333',
     color: '#FFF',
     cursor: 'pointer',
-    fontSize: '1.5rem',
+    fontSize: '1rem',
     fontWeight: 'bold',
   },
 };

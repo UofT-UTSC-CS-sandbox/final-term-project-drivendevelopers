@@ -7,21 +7,28 @@ const styles = {
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    height: '100vh',
-    backgroundColor: '#000',
-    color: '#fff',
+    minHeight: '100vh',
+    backgroundColor: '#f7f7f7',  // Matched background color with Dashboard
+    color: '#000',  // Matched text color with Dashboard
+    padding: '20px',
+    boxSizing: 'border-box',
   },
   formTitle: {
     fontFamily: 'Impact, sans-serif',
     fontSize: '4rem',
-    color: '#28a745',
+    color: '#007bff',  // Adjusted title color
     marginBottom: '1.5rem',
   },
   form: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    width: '300px',
+    width: '600px',
+    backgroundColor: '#fff',  // Matched form background color with Dashboard
+    padding: '75px',
+    borderRadius: '10px',
+    boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',  // Matched box shadow with Dashboard
+    marginBottom: '20px',
   },
   formGroup: {
     marginBottom: '15px',
@@ -30,18 +37,20 @@ const styles = {
   formLabel: {
     marginBottom: '5px',
     fontSize: '1.2rem',
+    color: '#333',  // Adjusted label color
   },
   formInput: {
     width: '100%',
     padding: '10px',
     borderRadius: '5px',
     border: '1px solid #ccc',
+    marginBottom: '10px',
   },
   formButton: {
     padding: '10px 20px',
     borderRadius: '5px',
     border: 'none',
-    backgroundColor: '#28a745',
+    backgroundColor: '#007bff',
     color: '#fff',
     cursor: 'pointer',
     fontSize: '1rem',

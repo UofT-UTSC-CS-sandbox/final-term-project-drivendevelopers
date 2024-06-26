@@ -7,6 +7,7 @@ import ProfileView from './profile/ProfileView';
 import EditProfileForm from './profile/EditProfileForm';
 import ProjectList from './projects/ProjectList';
 import AddProject from './projects/AddProject';
+import SearchUser from './SearchUser';
 
 const App = () => {
   return (
@@ -19,6 +20,7 @@ const App = () => {
         <Route path="/edit-profile" element={<EditProfileForm />} />
         <Route path="/project-list" element={<ProjectList />} />
         <Route path="/add-project" element={<AddProject />} />
+        <Route path="/connect" element={<SearchUser />} />
       </Routes>
     </Router>
   );
