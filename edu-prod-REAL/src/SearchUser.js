@@ -71,8 +71,8 @@ const styles = {
 
 const SearchUsers = () => {
   const [name, setName] = useState('');
-  const [interests, setInterests] = useState('');
-  const [hobbies, setHobbies] = useState('');
+  const [academicInterests, setAcademicInterests] = useState('');
+  const [courses, setCourses] = useState('');
   const [program, setProgram] = useState('');
   const [year, setYear] = useState('');
   const [results, setResults] = useState([]);
@@ -83,8 +83,8 @@ const SearchUsers = () => {
     // Construct the search query
     const query = {
       ...(name && { name }),
-      ...(interests && { interests }),
-      ...(hobbies && { hobbies }),
+      ...(academicInterests && { academicInterests }),
+      ...(courses && { courses }),
       ...(program && { program }),
       ...(year && { year }),
     };
@@ -125,21 +125,21 @@ const SearchUsers = () => {
           />
           <input
             type="text"
-            placeholder="Add Interests"
-            value={interests}
-            onChange={(e) => setInterests(e.target.value)}
+            placeholder="Academic Interests"
+            value={academicInterests}
+            onChange={(e) => setAcademicInterests(e.target.value)}
             style={styles.input}
           />
           <input
             type="text"
-            placeholder="Add Interests and Hobbies"
-            value={hobbies}
-            onChange={(e) => setHobbies(e.target.value)}
+            placeholder="Courses"
+            value={courses}
+            onChange={(e) => setCourses(e.target.value)}
             style={styles.input}
           />
           <input
             type="text"
-            placeholder="Add Program"
+            placeholder="Program"
             value={program}
             onChange={(e) => setProgram(e.target.value)}
             style={styles.input}
@@ -160,11 +160,11 @@ const SearchUsers = () => {
           {results.length > 0 ? (
             results.map((user, index) => (
               <div key={index} style={styles.resultItem}>
-                <p><strong>Name:</strong> {user.name}</p>
-                <p><strong>Interests:</strong> {user.interests}</p>
-                <p><strong>Hobbies:</strong> {user.hobbies}</p>
-                <p><strong>Program:</strong> {user.program}</p>
-                <p><strong>Year:</strong> {user.year}</p>
+                <p><strong>Name:</strong> {user.fullName}</p>
+                <p><strong>Academic Interests:</strong> {user.interests.join(', ')}</p>
+                <p><strong>Courses:</strong> {user.courses.join(', ')}</p>
+                <p><strong>Program:</strong> {user.programName}</p>
+                <p><strong>Year:</strong> {user.yearOfStudy}</p>
               </div>
             ))
           ) : (

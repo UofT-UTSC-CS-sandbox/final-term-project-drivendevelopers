@@ -182,12 +182,12 @@ app.get('/api/profile', authenticateToken, async (req, res) => {
 });
 
 app.post('/api/search-users', authenticateToken, async (req, res) => {
-  const { name, interests, hobbies, program, year } = req.body;
+  const { name, academicInterests, courses, program, year } = req.body;
   const query = {};
 
   if (name) query.fullName = { $regex: name, $options: 'i' };
-  if (interests) query.interests = { $regex: interests, $options: 'i' };
-  if (hobbies) query.hobbies = { $regex: hobbies, $options: 'i' };
+  if (academicInterests) query.interests = { $regex: academicInterests, $options: 'i' };
+  if (courses) query.courses = { $regex: courses, $options: 'i' };
   if (program) query.programName = { $regex: program, $options: 'i' };
   if (year) query.yearOfStudy = year;
 

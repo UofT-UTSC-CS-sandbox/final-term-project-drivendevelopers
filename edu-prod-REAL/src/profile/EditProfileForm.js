@@ -70,17 +70,27 @@ const styles = {
     fontSize: '1rem',
     fontWeight: 'bold',
   },
-  interestCheckbox: {
-    display: 'inline-flex',
+  interestContainer: {
+    marginTop: '10px',
+    display: 'flex',
+    flexDirection: 'column',
+    width: '50%',
+  },
+  interestItem: {
+    display: 'flex',
     alignItems: 'center',
-    marginBottom: '10px',
-    fontSize: '1rem',
+    marginTop: '5px',
+    justifyContent: 'space-between',
+    backgroundColor: '#fff',
+    borderRadius: '5px',
+    padding: '5px 10px',
+    border: '1px solid #ccc',
   },
   courseContainer: {
     marginTop: '10px',
     display: 'flex',
     flexDirection: 'column',
-    width: '100%',
+    width: '50%',
   },
   courseItem: {
     display: 'flex',
@@ -103,14 +113,6 @@ const styles = {
   },
 };
 
-const academicInterests = [
-  'Computer Science',
-  'Mathematics',
-  'Physics',
-  'Chemistry',
-  'Biology',
-];
-
 const EditProfileForm = () => {
   const [programName, setProgramName] = useState('');
   const [yearOfStudy, setYearOfStudy] = useState('');
@@ -118,9 +120,10 @@ const EditProfileForm = () => {
   const [gpa, setGpa] = useState('');
   const [description, setDescription] = useState('');
   const [selectedInterests, setSelectedInterests] = useState([]);
+  const [interest, setInterest] = useState('');
   const [courses, setCourses] = useState('');
   const [coursesList, setCoursesList] = useState([]);
-  const [profilePicture, setProfilePicture] = useState(null); // State to store profile picture file
+  const [profilePicture, setProfilePicture] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -150,8 +153,6 @@ const EditProfileForm = () => {
       setDescription(data.description);
       setSelectedInterests(data.interests || []);
       setCoursesList(data.courses || []);
-      // Optionally, set profile picture state if available
-      // setProfilePicture(data.profilePicture);
     } catch (error) {
       console.error('Error fetching profile:', error);
     }
@@ -198,23 +199,28 @@ const EditProfileForm = () => {
   };
 
   const handleInterestChange = (event) => {
-    const value = event.target.value;
-    setSelectedInterests(
-      selectedInterests.includes(value)
-        ? selectedInterests.filter((interest) => interest !== value)
-        : [...selectedInterests, value]
-    );
+    setInterest(event.target.value);
+  };
+
+  const handleAddInterest = () => {
+    if (interest.trim() && !selectedInterests.includes(interest.trim())) {
+      setSelectedInterests([...selectedInterests, interest.trim()]);
+      setInterest('');
+    }
+  };
+
+  const handleInterestRemove = (index) => {
+    setSelectedInterests(selectedInterests.filter((_, i) => i !== index));
   };
 
   const handleCoursesChange = (event) => {
     setCourses(event.target.value);
   };
 
-  const handleCoursesKeyPress = (event) => {
-    if (event.key === 'Enter' && courses.trim()) {
+  const handleAddCourse = () => {
+    if (courses.trim() && !coursesList.includes(courses.trim())) {
       setCoursesList([...coursesList, courses.trim()]);
       setCourses('');
-      event.preventDefault();
     }
   };
 
@@ -277,18 +283,32 @@ const EditProfileForm = () => {
         </div>
         <div style={styles.formGroup}>
           <label style={styles.formLabel}>Academic Interests</label>
-          <div>
-            {academicInterests.map((interest) => (
-              <label key={interest} style={styles.interestCheckbox}>
-                <input
-                  type="checkbox"
-                  value={interest}
-                  checked={selectedInterests.includes(interest)}
-                  onChange={handleInterestChange}
-                  style={{ marginRight: '10px' }}
-                />
-                {interest}
-              </label>
+          <input
+            type="text"
+            value={interest}
+            onChange={handleInterestChange}
+            style={styles.formInput}
+            placeholder="Add an interest and click 'Add'"
+          />
+          <button
+            type="button"
+            onClick={handleAddInterest}
+            style={{ ...styles.formButton, marginTop: '10px', marginBottom: '10px' }}
+          >
+            Add
+          </button>
+          <div style={styles.interestContainer}>
+            {selectedInterests.map((interest, index) => (
+              <div key={index} style={styles.interestItem}>
+                <span>{interest}</span>
+                <button
+                  type="button"
+                  onClick={() => handleInterestRemove(index)}
+                  style={styles.removeButton}
+                >
+                  Remove
+                </button>
+              </div>
             ))}
           </div>
         </div>
@@ -298,9 +318,16 @@ const EditProfileForm = () => {
             type="text"
             value={courses}
             onChange={handleCoursesChange}
-            onKeyPress={handleCoursesKeyPress}
             style={styles.formInput}
+            placeholder="Add a course and click 'Add'"
           />
+          <button
+            type="button"
+            onClick={handleAddCourse}
+            style={{ ...styles.formButton, marginTop: '10px', marginBottom: '10px' }}
+          >
+            Add
+          </button>
           <div style={styles.courseContainer}>
             {coursesList.map((course, index) => (
               <div key={index} style={styles.courseItem}>
@@ -325,12 +352,6 @@ const EditProfileForm = () => {
               onChange={handleProfilePictureChange}
             />
           </div>
-          {/* Optional: Show file name or other details */}
-          {/* {profilePicture && (
-            <div>
-              <p>File selected: {profilePicture.name}</p>
-            </div>
-          )} */}
         </div>
         <button type="submit" style={styles.formButton}>
           Save Changes

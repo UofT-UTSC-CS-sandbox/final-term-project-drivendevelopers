@@ -31,15 +31,16 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+    textAlign: 'center', // Center align text
   },
   profileItem: {
-    marginBottom: '1rem',
+    marginBottom: '0.5rem', // Reduce the spacing here
     fontSize: '1.2rem',
     color: '#555',
   },
   profilePicture: {
-    width: '150px',
-    height: '150px',
+    width: '300px',
+    height: '300px',
     borderRadius: '50%',
     marginBottom: '1rem',
   },
@@ -98,6 +99,8 @@ const ProfileView = () => {
         gpa: data.gpa,
         program: data.programName,
         description: data.description,
+        interests: data.interests || [],
+        courses: data.courses || [],
         profilePicture: data.profilePicture,
       });
     } catch (error) {
@@ -132,6 +135,8 @@ const ProfileView = () => {
             <p style={styles.profileItem}><strong>Year of Study:</strong> {profileData.yearOfStudy}</p>
             <p style={styles.profileItem}><strong>GPA:</strong> {profileData.gpa}</p>
             <p style={styles.profileItem}><strong>Description:</strong> {profileData.description}</p>
+            <p style={styles.profileItem}><strong>Academic Interests:</strong> {profileData.interests.join(', ')}</p>
+            <p style={styles.profileItem}><strong>Courses:</strong> {profileData.courses.join(', ')}</p>
           </div>
         </div>
       ) : (
