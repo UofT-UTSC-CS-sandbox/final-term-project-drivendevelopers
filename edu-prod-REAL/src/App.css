@@ -1,0 +1,49 @@
+/* src/App.css */
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+button {
+  outline: none;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+  padding: 10px;
+  border-radius: 20px;
+  border: none;
+  width: 100%;
+  margin-bottom: 0.5rem;
+  background-color: #333;
+  color: #fff;
+}
+
+input::placeholder {
+  color: #ccc;
+}
+
+button[type="submit"],
+button[type="button"] {
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+button[type="submit"] {
+  background-color: #ff4d4f;
+  color: #fff;
+}
+
+button[type="button"] {
+  background-color: #333;
+  color: #fff;
+}
+
+h2 {
+  color: #fff;
+}
