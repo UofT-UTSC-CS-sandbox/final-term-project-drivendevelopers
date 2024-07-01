@@ -11,6 +11,8 @@ const userSchema = new mongoose.Schema({
   profilePicture: { type: String },
   interests: { type: [String], default: [] },
   courses: { type: [String], default: [] },
+  friendRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] 
 });
 
 const User = mongoose.model('User', userSchema);

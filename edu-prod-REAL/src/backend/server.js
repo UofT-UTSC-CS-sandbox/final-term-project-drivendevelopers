@@ -192,12 +192,120 @@ app.post('/api/search-users', authenticateToken, async (req, res) => {
   if (year) query.yearOfStudy = year;
 
   try {
-    const users = await User.find(query);
+    const users = await User.find(query).select('fullName interests courses programName yearOfStudy profilePicture');
     res.json(users);
   } catch (error) {
     console.error('Error searching users:', error);
     res.status(500).json({ message: 'Error searching users' });
   }
 });
+// src/backend/server.js
+
+app.post('/api/friend-request', authenticateToken, async (req, res) => {
+  const { userId } = req.body;
+
+  try {
+    const user = await User.findById(req.user.id);
+    const recipient = await User.findById(userId);
+
+    if (!recipient) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (recipient.friendRequests.includes(user._id)) {
+      return res.status(400).json({ message: 'Friend request already sent' });
+    }
+
+    recipient.friendRequests.push(user._id);
+    await recipient.save();
+
+    res.status(200).json({ message: 'Friend request sent successfully' });
+  } catch (err) {
+    console.error('Error sending friend request:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+app.get('/api/friend-requests', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).populate('friendRequests', 'fullName');
+    res.status(200).json(user.friendRequests);
+  } catch (err) {
+    console.error('Error fetching friend requests:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+app.delete('/api/friend-request/:id', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    user.friendRequests = user.friendRequests.filter(requestId => requestId.toString() !== req.params.id);
+    await user.save();
+
+    res.status(200).json({ message: 'Friend request removed successfully' });
+  } catch (error) {
+    console.error('Error removing friend request:', error.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+app.post('/api/friend-request/accept/:id', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    const friend = await User.findById(req.params.id);
+
+    if (!friend) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    user.friends.push(friend._id);
+    friend.friends.push(user._id);
+
+    user.friendRequests = user.friendRequests.filter(requestId => requestId.toString() !== req.params.id);
+
+    await user.save();
+    await friend.save();
+
+    res.status(200).json({ message: 'Friend request accepted' });
+  } catch (err) {
+    console.error('Error accepting friend request:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+app.get('/api/friends', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).populate('friends', 'fullName profilePicture');
+    res.status(200).json(user.friends);
+  } catch (err) {
+    console.error('Error fetching friends:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+app.get('/api/profile/:id', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const profileData = {
+      email: user.email,
+      fullName: user.fullName,
+      gpa: user.gpa,
+      programName: user.programName,
+      yearOfStudy: user.yearOfStudy,
+      description: user.description,
+      profilePicture: user.profilePicture,
+      interests: user.interests,
+      courses: user.courses,
+    };
+
+    res.status(200).json(profileData);
+  } catch (err) {
+    console.error('Error fetching profile:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
+
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

@@ -1,5 +1,6 @@
+// src/profile/ProfileView.js
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const styles = {
   profileContainer: {
@@ -31,10 +32,10 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    textAlign: 'center', // Center align text
+    textAlign: 'center',
   },
   profileItem: {
-    marginBottom: '0.5rem', // Reduce the spacing here
+    marginBottom: '0.5rem',
     fontSize: '1.2rem',
     color: '#555',
   },
@@ -68,8 +69,9 @@ const styles = {
   },
 };
 
-const ProfileView = () => {
+const ProfileView = ({ readOnly = false }) => {
   const navigate = useNavigate();
+  const { id } = useParams();
   const [profileData, setProfileData] = useState(null);
 
   useEffect(() => {
@@ -79,7 +81,8 @@ const ProfileView = () => {
   const fetchProfileData = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/profile', {
+      const url = id ? `http://localhost:5000/api/profile/${id}` : 'http://localhost:5000/api/profile';
+      const response = await fetch(url, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -92,27 +95,13 @@ const ProfileView = () => {
       }
 
       const data = await response.json();
-      setProfileData({
-        email: data.email,
-        yearOfStudy: data.yearOfStudy,
-        fullName: data.fullName,
-        gpa: data.gpa,
-        program: data.programName,
-        description: data.description,
-        interests: data.interests || [],
-        courses: data.courses || [],
-        profilePicture: data.profilePicture,
-      });
+      setProfileData(data);
     } catch (error) {
       console.error('Error fetching profile:', error);
     }
   };
 
-  const handleEditProfile = () => {
-    navigate('/edit-profile');
-  };
-
-  const handleBackToDashboard = () => {
+  const handleBack = () => {
     navigate('/dashboard');
   };
 
@@ -131,7 +120,7 @@ const ProfileView = () => {
             )}
             <p style={styles.profileItem}><strong>Email:</strong> {profileData.email}</p>
             <p style={styles.profileItem}><strong>Full Name:</strong> {profileData.fullName}</p>
-            <p style={styles.profileItem}><strong>Program:</strong> {profileData.program}</p>
+            <p style={styles.profileItem}><strong>Program:</strong> {profileData.programName}</p>
             <p style={styles.profileItem}><strong>Year of Study:</strong> {profileData.yearOfStudy}</p>
             <p style={styles.profileItem}><strong>GPA:</strong> {profileData.gpa}</p>
             <p style={styles.profileItem}><strong>Description:</strong> {profileData.description}</p>
@@ -142,10 +131,15 @@ const ProfileView = () => {
       ) : (
         <p>Loading profile...</p>
       )}
-      <button style={styles.profileButton} onClick={handleEditProfile}>Edit Profile</button>
-      <button style={styles.backButton} onClick={handleBackToDashboard}>Back to Dashboard</button>
+      {!readOnly && (
+        <button style={styles.profileButton} onClick={() => navigate('/edit-profile')}>
+          Edit Profile
+        </button>
+      )}
+      <button style={styles.backButton} onClick={handleBack}>Back to Dashboard</button>
     </div>
   );
 };
 
 export default ProfileView;
+

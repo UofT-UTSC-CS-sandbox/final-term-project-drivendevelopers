@@ -67,6 +67,12 @@ const styles = {
     border: '1px solid #ccc',
     marginBottom: '10px',
   },
+  profilePicture: {
+    width: '50px',
+    height: '50px',
+    borderRadius: '50%',
+    marginRight: '10px',
+  },
 };
 
 const SearchUsers = () => {
@@ -76,11 +82,10 @@ const SearchUsers = () => {
   const [program, setProgram] = useState('');
   const [year, setYear] = useState('');
   const [results, setResults] = useState([]);
+  const [friendRequests, setFriendRequests] = useState([]);
 
   const handleSearch = async (e) => {
     e.preventDefault();
-
-    // Construct the search query
     const query = {
       ...(name && { name }),
       ...(academicInterests && { academicInterests }),
@@ -108,6 +113,28 @@ const SearchUsers = () => {
       setResults(data);
     } catch (error) {
       console.error('Error fetching users:', error);
+    }
+  };
+
+  const handleSendFriendRequest = async (userId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5000/api/friend-request', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send friend request');
+      }
+
+      setFriendRequests([...friendRequests, userId]);
+    } catch (error) {
+      console.error('Error sending friend request:', error);
     }
   };
 
@@ -160,11 +187,25 @@ const SearchUsers = () => {
           {results.length > 0 ? (
             results.map((user, index) => (
               <div key={index} style={styles.resultItem}>
+                {user.profilePicture && (
+                  <img
+                    src={`http://localhost:5000${user.profilePicture}`}
+                    alt="Profile"
+                    style={styles.profilePicture}
+                  />
+                )}
                 <p><strong>Name:</strong> {user.fullName}</p>
                 <p><strong>Academic Interests:</strong> {user.interests.join(', ')}</p>
                 <p><strong>Courses:</strong> {user.courses.join(', ')}</p>
                 <p><strong>Program:</strong> {user.programName}</p>
                 <p><strong>Year:</strong> {user.yearOfStudy}</p>
+                <button
+                  onClick={() => handleSendFriendRequest(user._id)}
+                  disabled={friendRequests.includes(user._id)}
+                  style={styles.button}
+                >
+                  {friendRequests.includes(user._id) ? 'Request Sent' : 'Add Friend'}
+                </button>
               </div>
             ))
           ) : (

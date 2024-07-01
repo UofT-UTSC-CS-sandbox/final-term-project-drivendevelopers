@@ -26,7 +26,7 @@ const styles = {
   navButtons: {
     display: 'flex',
     alignItems: 'center',
-    gap: '20px',  // Increased gap
+    gap: '20px',
     fontSize: '1.5rem',
     color: '#000',
   },
@@ -97,10 +97,12 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   const [userName, setUserName] = useState('');
+  const [friendRequests, setFriendRequests] = useState([]);
 
   useEffect(() => {
     fetchProfileData();
     fetchProjects();
+    fetchFriendRequests();
   }, []);
 
   const fetchProfileData = async () => {
@@ -147,6 +149,28 @@ const Dashboard = () => {
     }
   };
 
+  const fetchFriendRequests = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5000/api/friend-requests', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch friend requests');
+      }
+
+      const data = await response.json();
+      setFriendRequests(data);
+    } catch (error) {
+      console.error('Error fetching friend requests:', error);
+    }
+  };
+
   const handleNavigation = (path) => {
     navigate(path);
   };
@@ -166,13 +190,24 @@ const Dashboard = () => {
           <button style={styles.navButton} onClick={() => handleNavigation('/project-list')}>Projects</button>
           <button style={styles.navButton} onClick={() => handleNavigation('/notifications')}>
             <i className="fas fa-bell"></i>
+            {friendRequests.length > 0 && (
+              <span style={{ color: 'red', marginLeft: '5px' }}>
+                {friendRequests.length}
+              </span>
+            )}
           </button>
+          <button style={styles.navButton} onClick={() => handleNavigation('/friend-list')}>Friends</button> {/* Add this line */}
           <button style={styles.navButton} onClick={handleLogout}>
             <i className="fas fa-sign-out-alt"></i> Logout
           </button>
         </div>
       </div>
       <h1 style={styles.mainTitle}>Hello, {userName || 'User'}!</h1>
+      {friendRequests.length > 0 && (
+        <div style={{ marginBottom: '20px', color: 'red' }}>
+          You have {friendRequests.length} friend request(s)! Please go to Notifications.
+        </div>
+      )}
       <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
         <div style={styles.column}>
           <h2 style={styles.subTitle}>Recommended Connections</h2>
