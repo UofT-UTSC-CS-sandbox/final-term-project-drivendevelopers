@@ -4,9 +4,9 @@ import { useNavigate } from 'react-router-dom';
 const styles = {
   container: {
     padding: '20px',
-    backgroundColor: '#000', // Dark theme background color
-    color: '#dee2e6', // Dark theme text color
-    minHeight: '100vh', // Full height of the viewport
+    backgroundColor: '#f7f7f7',  // Matched background color with Dashboard
+    color: '#000',  // Matched text color with Dashboard
+    minHeight: '100vh',
     boxSizing: 'border-box',
     display: 'flex',
     flexDirection: 'column',
@@ -19,13 +19,13 @@ const styles = {
     alignItems: 'center',
     marginBottom: '20px',
     fontSize: '2.5rem',
-    color: '#ff4d4f',
+    color: '#007bff',  // Adjusted header color
   },
   addButton: {
     padding: '10px 20px',
     borderRadius: '20px',
     border: 'none',
-    backgroundColor: '#dc3545',
+    backgroundColor: '#007bff',
     color: '#fff',
     cursor: 'pointer',
     fontSize: '1.5rem',
@@ -43,18 +43,18 @@ const styles = {
   },
   projectListContainer: {
     width: '100%',
-    maxHeight: 'calc(100vh - 180px)', // Adjust to leave space for header and footer
-    overflowY: 'auto', // Vertical scroll
+    maxHeight: 'calc(100vh - 180px)',
+    overflowY: 'auto',
     marginTop: '20px',
   },
   projectPanel: {
-    position: 'relative', // Needed for the delete button positioning
+    position: 'relative',
     padding: '20px',
     borderRadius: '10px',
-    backgroundColor: '#454d55', // Darker background color
+    backgroundColor: '#fff',  // Matched background color with Dashboard
     boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
     marginBottom: '20px',
-    cursor: 'default', // Remove the cursor pointer
+    cursor: 'default',
     transition: 'background-color 0.3s ease',
   },
   deleteButton: {
@@ -74,12 +74,13 @@ const styles = {
     fontSize: '1.5rem',
     marginBottom: '10px',
     fontWeight: 'bold',
+    color: '#333',  // Adjusted text color for project name
   },
   projectDetailsPanel: {
     marginBottom: '10px',
   },
   projectDetailsSection: {
-    backgroundColor: '#333',
+    backgroundColor: '#eee',  // Matched background color with Dashboard
     padding: '10px',
     borderRadius: '8px',
     marginTop: '10px',
@@ -87,6 +88,7 @@ const styles = {
   projectDescription: {
     marginBottom: '10px',
     fontSize: '1rem',
+    color: '#555',  // Matched text color with Dashboard
   },
   projectLink: {
     display: 'block',
@@ -127,7 +129,7 @@ const ProjectList = () => {
       }
 
       const data = await response.json();
-      setProjects(data); // Assuming the response is an array of projects directly
+      setProjects(data);
     } catch (error) {
       console.error('Error fetching projects:', error);
     }
@@ -156,7 +158,6 @@ const ProjectList = () => {
         throw new Error('Failed to delete project');
       }
 
-      // Remove the deleted project from the state
       setProjects(projects.filter((project) => project._id !== projectId));
     } catch (error) {
       console.error('Error deleting project:', error);
@@ -181,7 +182,7 @@ const ProjectList = () => {
               <button
                 style={styles.deleteButton}
                 onClick={(e) => {
-                  e.stopPropagation(); // Prevent the panel click event from triggering
+                  e.stopPropagation();
                   handleDeleteProject(project._id);
                 }}
               >

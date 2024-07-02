@@ -1,5 +1,6 @@
+// src/profile/ProfileView.js
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const styles = {
   profileContainer: {
@@ -8,12 +9,13 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: '100vh',
-    backgroundColor: '#000',
-    color: '#fff',
+    backgroundColor: '#f7f7f7',
+    color: '#000',
     padding: '20px',
+    boxSizing: 'border-box',
   },
   profilePanel: {
-    backgroundColor: '#333',
+    backgroundColor: '#fff',
     borderRadius: '10px',
     padding: '20px',
     maxWidth: '600px',
@@ -22,29 +24,36 @@ const styles = {
     marginBottom: '20px',
   },
   profileTitle: {
-    fontFamily: 'Impact, sans-serif',
-    fontSize: '5rem',
-    color: '#ff4d4f',
-    marginBottom: '1.5rem',
+    fontSize: '3rem',
+    color: '#333',
+    marginBottom: '20px',
   },
   profileDetails: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+    textAlign: 'center',
   },
   profileItem: {
-    marginBottom: '1rem',
+    marginBottom: '0.5rem',
     fontSize: '1.2rem',
+    color: '#555',
+  },
+  profilePicture: {
+    width: '300px',
+    height: '300px',
+    borderRadius: '50%',
+    marginBottom: '1rem',
   },
   profileButton: {
     marginTop: '1rem',
     padding: '10px 20px',
     borderRadius: '20px',
     border: 'none',
-    backgroundColor: '#ff4d4f',
+    backgroundColor: '#007bff',
     color: '#fff',
     cursor: 'pointer',
-    fontSize: '1.5rem',
+    fontSize: '1rem',
     fontWeight: 'bold',
   },
   backButton: {
@@ -55,19 +64,14 @@ const styles = {
     backgroundColor: '#333',
     color: '#FFF',
     cursor: 'pointer',
-    fontSize: '1.5rem',
+    fontSize: '1rem',
     fontWeight: 'bold',
-  },
-  profileImage: {
-    width: '150px',
-    height: '150px',
-    borderRadius: '50%',
-    marginBottom: '1rem',
   },
 };
 
-const ProfileView = () => {
+const ProfileView = ({ readOnly = false }) => {
   const navigate = useNavigate();
+  const { id } = useParams();
   const [profileData, setProfileData] = useState(null);
 
   useEffect(() => {
@@ -77,10 +81,11 @@ const ProfileView = () => {
   const fetchProfileData = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/profile', {
+      const url = id ? `http://localhost:5000/api/profile/${id}` : 'http://localhost:5000/api/profile';
+      const response = await fetch(url, {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
@@ -90,25 +95,13 @@ const ProfileView = () => {
       }
 
       const data = await response.json();
-      setProfileData({
-        email: data.email,
-        yearOfStudy: data.yearOfStudy,
-        fullName: data.fullName,
-        gpa: data.gpa,
-        program: data.programName,
-        description: data.description,
-        profilePicture: data.profilePicture,
-      });
+      setProfileData(data);
     } catch (error) {
       console.error('Error fetching profile:', error);
     }
   };
 
-  const handleEditProfile = () => {
-    navigate('/edit-profile');
-  };
-
-  const handleBackToDashboard = () => {
+  const handleBack = () => {
     navigate('/dashboard');
   };
 
@@ -117,29 +110,36 @@ const ProfileView = () => {
       <h1 style={styles.profileTitle}>Profile View</h1>
       {profileData ? (
         <div style={styles.profilePanel}>
-          {profileData.profilePicture && (
-            <img
-              src={'http://localhost:5000/api/profile/${profileData.profilePicture}'}
-              alt="Profile"
-              style={styles.profileImage}
-            />
-          )}
           <div style={styles.profileDetails}>
+            {profileData.profilePicture && (
+              <img
+                src={`http://localhost:5000${profileData.profilePicture}`}
+                alt="Profile"
+                style={styles.profilePicture}
+              />
+            )}
             <p style={styles.profileItem}><strong>Email:</strong> {profileData.email}</p>
             <p style={styles.profileItem}><strong>Full Name:</strong> {profileData.fullName}</p>
-            <p style={styles.profileItem}><strong>Program:</strong> {profileData.program}</p>
+            <p style={styles.profileItem}><strong>Program:</strong> {profileData.programName}</p>
             <p style={styles.profileItem}><strong>Year of Study:</strong> {profileData.yearOfStudy}</p>
             <p style={styles.profileItem}><strong>GPA:</strong> {profileData.gpa}</p>
             <p style={styles.profileItem}><strong>Description:</strong> {profileData.description}</p>
+            <p style={styles.profileItem}><strong>Academic Interests:</strong> {profileData.interests.join(', ')}</p>
+            <p style={styles.profileItem}><strong>Courses:</strong> {profileData.courses.join(', ')}</p>
           </div>
         </div>
       ) : (
         <p>Loading profile...</p>
       )}
-      <button style={styles.profileButton} onClick={handleEditProfile}>Edit Profile</button>
-      <button style={styles.backButton} onClick={handleBackToDashboard}>Back to Dashboard</button>
+      {!readOnly && (
+        <button style={styles.profileButton} onClick={() => navigate('/edit-profile')}>
+          Edit Profile
+        </button>
+      )}
+      <button style={styles.backButton} onClick={handleBack}>Back to Dashboard</button>
     </div>
   );
 };
 
 export default ProfileView;
+
