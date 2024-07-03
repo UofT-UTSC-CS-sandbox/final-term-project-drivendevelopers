@@ -304,6 +304,29 @@ app.get('/api/profile/:id', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+app.delete('/api/friends/:id', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    const friendId = req.params.id;
+
+    // Remove friend from the user's friend list
+    user.friends = user.friends.filter(friend => friend.toString() !== friendId);
+    await user.save();
+
+    // Also remove the user from the friend's friend list
+    const friend = await User.findById(friendId);
+    if (friend) {
+      friend.friends = friend.friends.filter(friend => friend.toString() !== req.user.id);
+      await friend.save();
+    }
+
+    res.status(200).json({ message: 'Friend removed successfully' });
+  } catch (error) {
+    console.error('Error removing friend:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 
 
 

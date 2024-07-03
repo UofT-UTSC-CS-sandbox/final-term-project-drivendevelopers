@@ -28,17 +28,26 @@ const styles = {
     marginBottom: '20px',
   },
   friendItem: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between', // Align items to the ends
     marginBottom: '10px',
     fontSize: '1.2rem',
     color: '#555',
-    display: 'flex',
-    alignItems: 'center',
   },
   profilePicture: {
     width: '50px',
     height: '50px',
     borderRadius: '50%',
     marginRight: '10px',
+  },
+  friendInfo: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  buttonsContainer: {
+    display: 'flex',
+    gap: '10px', // Add gap between buttons
   },
   button: {
     padding: '10px 20px',
@@ -49,7 +58,16 @@ const styles = {
     cursor: 'pointer',
     fontSize: '1rem',
     fontWeight: 'bold',
-    marginRight: '10px',
+  },
+  removeButton: {
+    padding: '10px 20px',
+    borderRadius: '5px',
+    border: 'none',
+    backgroundColor: '#dc3545',
+    color: '#fff',
+    cursor: 'pointer',
+    fontSize: '1rem',
+    fontWeight: 'bold',
   },
   backButton: {
     padding: '10px 20px',
@@ -93,6 +111,27 @@ const FriendList = () => {
     }
   };
 
+  const handleRemoveFriend = async (friendId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:5000/api/friends/${friendId}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to remove friend');
+      }
+
+      setFriends(friends.filter(friend => friend._id !== friendId));
+    } catch (error) {
+      console.error('Error removing friend:', error);
+    }
+  };
+
   const handleViewProfile = (id) => {
     navigate(`/profile-view/${id}`);
   };
@@ -108,15 +147,20 @@ const FriendList = () => {
         {friends.length > 0 ? (
           friends.map((friend) => (
             <div key={friend._id} style={styles.friendItem}>
-              {friend.profilePicture && (
-                <img
-                  src={`http://localhost:5000${friend.profilePicture}`}
-                  alt="Profile"
-                  style={styles.profilePicture}
-                />
-              )}
-              <p><strong>{friend.fullName}</strong></p>
-              <button style={styles.button} onClick={() => handleViewProfile(friend._id)}>View Profile</button>
+              <div style={styles.friendInfo}>
+                {friend.profilePicture && (
+                  <img
+                    src={`http://localhost:5000${friend.profilePicture}`}
+                    alt="Profile"
+                    style={styles.profilePicture}
+                  />
+                )}
+                <p><strong>{friend.fullName}</strong></p>
+              </div>
+              <div style={styles.buttonsContainer}>
+                <button style={styles.button} onClick={() => handleViewProfile(friend._id)}>View Profile</button>
+                <button style={styles.removeButton} onClick={() => handleRemoveFriend(friend._id)}>Remove</button>
+              </div>
             </div>
           ))
         ) : (
