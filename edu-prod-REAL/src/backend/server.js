@@ -8,7 +8,6 @@ const path = require('path');
 const User = require('./User');
 const Project = require('./Project');
 require('dotenv').config();
-
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -281,6 +280,22 @@ app.get('/api/friends', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+app.get('/api/connections', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const recommendations = await User.find({
+      interests: { $in: user.interests },
+      _id: { $ne: req.user.id }
+    });
+
+    res.status(200).json(recommendations);
+  } catch (err) {
+    console.error('Error fetching recommendations:', err.message);
+    res.status(500).json({ message: 'Error fetching recommendations' });
+  }
+});
 app.get('/api/profile/:id', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -326,8 +341,6 @@ app.delete('/api/friends/:id', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-
-
 
 
 

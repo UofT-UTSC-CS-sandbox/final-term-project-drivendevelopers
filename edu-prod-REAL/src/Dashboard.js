@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import FriendRequestsNotification from './FriendRequestsNotification'; // Import the new component
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 const styles = {
@@ -91,6 +92,16 @@ const styles = {
     fontWeight: 'bold',
     marginBottom: '10px',
   },
+  profilePicture: {
+    width: '75px',
+    height: '75px',
+    borderRadius: '50%',
+    marginRight: '10px',
+    objectFit: 'cover',
+    objectPosition: 'center',
+    display: 'inline-block',
+    verticalAlign: 'middle'
+  },
 };
 
 const Dashboard = () => {
@@ -98,12 +109,40 @@ const Dashboard = () => {
   const [projects, setProjects] = useState([]);
   const [userName, setUserName] = useState('');
   const [friendRequests, setFriendRequests] = useState([]);
+  const [recommendedConnections, setRecommendedConnections] = useState([]);
+  const [sentRequests, setSentRequests] = useState([]);
+
+  
+
 
   useEffect(() => {
     fetchProfileData();
     fetchProjects();
     fetchFriendRequests();
+    fetchRecommendedConnections();
+    
+    
   }, []);
+  
+  
+  const fetchRecommendedConnections = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5000/api/connections', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch recommended connections');
+      }
+      const data = await response.json();
+      setRecommendedConnections(data);
+    } catch (error) {
+      console.error('Error fetching recommended connections:', error);
+    }
+  };
+
 
   const fetchProfileData = async () => {
     try {
@@ -165,9 +204,32 @@ const Dashboard = () => {
       }
 
       const data = await response.json();
-      setFriendRequests(data);
+      setFriendRequests(data.map(request => request._id)); // Update the friendRequests state with user IDs
     } catch (error) {
       console.error('Error fetching friend requests:', error);
+    }
+  };
+  const handleSendFriendRequest = async (userId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:5000/api/friend-request`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send friend request');
+      }
+
+      console.log(`Friend request sent to user ID: ${userId}`);
+      // Update the state to reflect the friend request was sent
+      setSentRequests((prev) => [...prev, userId]);
+    } catch (error) {
+      console.error('Error sending friend request:', error);
     }
   };
 
@@ -179,7 +241,6 @@ const Dashboard = () => {
     localStorage.removeItem('token'); // Clear token from localStorage
     navigate('/'); // Redirect to login page after logout
   };
-
   return (
     <div style={styles.dashboardContainer}>
       <div style={styles.header}>
@@ -203,15 +264,43 @@ const Dashboard = () => {
         </div>
       </div>
       <h1 style={styles.mainTitle}>Hello, {userName || 'User'}!</h1>
+      <FriendRequestsNotification friendRequests={friendRequests} /> {/* Use the new component here */}
       {friendRequests.length > 0 && (
         <div style={{ marginBottom: '20px', color: 'red' }}>
-          You have {friendRequests.length} friend request(s)! Please go to Notifications.
         </div>
+        // if friend request sent from recommended connections, then write you have sent a friend request
       )}
+
+
+
       <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
         <div style={styles.column}>
-          <h2 style={styles.subTitle}>Recommended Connections</h2>
-          {/* Empty for now */}
+        <h2 style={styles.subTitle}>Recommended Connections</h2>
+          {recommendedConnections.length > 0 ? (
+            recommendedConnections.map((user) => (
+              <div key={user._id} style={styles.projectCard}>
+                {user.profilePicture && (
+                  <img
+                    src={`http://localhost:5000${user.profilePicture}`}
+                    alt="Profile"
+                    style={styles.profilePicture}
+                  />
+                )}
+                <h3 style={styles.projectTitle}>{user.fullName}</h3>
+                <p style={styles.projectDescription}>Interests: {user.interests.join(', ')}</p>
+                <button
+                  onClick={() => handleSendFriendRequest(user._id)}
+                  disabled={friendRequests.includes(user._id)}
+                  style={styles.button}
+                >
+                  {sentRequests.includes(user._id) ? 'Request Sent' : 'Add Friend'}
+                </button>
+                
+              </div>
+            ))
+          ) : (
+            <p>No recommendations found</p>
+          )}
         </div>
         <div style={styles.column}>
           <h2 style={styles.subTitle}>Tools</h2>
