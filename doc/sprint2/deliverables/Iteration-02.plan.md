@@ -58,55 +58,43 @@ During our first meeting (planning meeting), we once again discussed the practic
 - **Purpose:** To document discussions and decisions made during meetings for future reference.
 
 
-
-
-
-
-
-
-
-#### CONTINUE HERE #######################################
-
-
-
-
-
-
-
-
-
-
 #### Git / GitHub workflow
 
-Describe your Git / GitHub workflow.     
-Essentially, we want to understand how your team members share a codebase and avoid conflicts.
+Within this sprint we have 3 separate features including user search, sending friend requests, and friend recommendations. For each of these, we create a separate github branch which begins with the "feature/" heading. These branches are created based on our develop branch which is where all of the feature/ branches are combined towards the end of each sprint. The develop branch was created in order to perform testing and view the final product before pushing new code to our main branch. 
 
- * Be concise, yet precise.      
-For example, "we use pull-requests" is not a precise statement since it leaves too many open questions - Pull-requests from where to where? Who reviews the pull-requests? Who is responsible for merging them? Etc.
+Once we test and push our updated code to our own feature branches, Tamam is in charge of reviewing the code and performing his own testing of the feature. Once this was done, he will merge each of the branches with develop. This will help us avoid conflicts, as there will only be one person making commits and pushes to the develop branch. Also, since the friend request and friend recommendation features are somewhat related, Harish and Hamza will keep close communication with each other (regarding their progress and changes made to the code). 
 
- * If applicable, specify any naming conventions or standards you decide to adopt.
-
- * Don't forget to **explain why** you chose this workflow.
+We chose this workflow because we felt that it would provide a high level of organization, communication, and the least number of conflicts during our development.
 
 
 ## Product
 
-_This entire section is mandatory._
-
-
 #### Goals and tasks
 
- * Describe your goals for this iteration and the tasks that you will have to complete in order to achieve these goals.
- * Order the items from most to least important.
- * Feel free (but not obligated) to specify some/all tasks as user stories.
+**Goal:** To implement the user search, friend request, and friend recommendation features of the Edu Prodigi app in an organized and efficient manner. The purpose of these features is to allow users to be able to connect and network.
+
+**Tasks:**
+- **Friend Requests Implementation (Harish Thevakumaran):**
+  - Add button to user search feature for users to send a friend request
+  - Add notification funcitonality for users to accept or decline a request
+  - develop appealing frontend UI and backend endpoints to retrieve and send requests
+- **Search User Implementation (Tamam Makki):**
+  - determine which user profile fields are relevant as part of a search criteria --> develop search filters
+  - develop frontend UI (search filters on left side of the page and results shown in a list on the right side) and backend logic for users to be able to search our database of users to find people they are interested in connecting with
+  - integrate frontend to backend and test functionality of feature
+- **Friends List Implementation (Tamam Makki):**
+  - develop frontend UI and backend logic for users to be able to see a list of all of their friends
+  - query database of users to find all of the logged in user's friends
+  - add the ability for users to view profiles and remove friends from this list as they please
+- **Friend Recommendations Implementation (Hamza Khalid):**
+  - create and implement algorithm (backend logic) to recommend users as potential connections based on similar academic and personal interests
+  - implement frontend interface on dashboard for users to see recommendations
+
 
 #### Artifacts
 
-List/describe the artifacts you will produce in order to present your project idea.
+- **Rough Attempt at Frontend UI** we will sit in a group setting and produce a mock version of the searching and recommendation user interfaces to determine what kind of design seems most suitable. The considerations in this process include determining what seems most intuitive and obvious to a new user. This will be done using just the frontend code for the page. This will be useful for our team, as our app design was not the greatest in the previous sprint. By discussing it as a group, we can receive each other's feedback and work collaboratively to make design decisions.
 
- * Artifacts can be text, code, images, videos, interactive mock-ups and/or any other useful artifact you can think of.
- * Make sure to explain the purpose of each artifact (i.e. Why is it on your to-do list? Why is it useful for your team?)
- * Be concise, yet precise.         
-   For example: "Build the website" is not precise at all, but "Build a static home page and upload it somewhere, so that it is publicly accessible" is much clearer.
+- **Description of Frontend UI** we will sit in a group setting and describe what exactly we want users to be able to do within the scope of each feature. This is done to reduce time wasted in deciding what components to include or not to include, as we did during the previous sprint. By getting each other's input we can arrive at a final solution more quickly and know exactly how the features each need to be developed.
 
 
