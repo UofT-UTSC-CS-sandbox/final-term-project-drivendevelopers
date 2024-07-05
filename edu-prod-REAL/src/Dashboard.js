@@ -315,7 +315,7 @@ const Dashboard = () => {
               <div key={project._id} style={styles.projectCard}>
                 <h3 style={styles.projectTitle}>{project.projectName}</h3>
                 <p style={styles.projectDescription}>{project.description}</p>
-                <p style={styles.projectMembers}>Number of members: {project.members || 1}</p>
+                {/* <p style={styles.projectMembers}>Number of members: {project.members || 1}</p> */}
               </div>
             ))
           ) : (
