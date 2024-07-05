@@ -8,7 +8,6 @@ const path = require('path');
 const User = require('./User');
 const Project = require('./Project');
 require('dotenv').config();
-
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -281,6 +280,22 @@ app.get('/api/friends', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+app.get('/api/connections', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const recommendations = await User.find({
+      interests: { $in: user.interests },
+      _id: { $ne: req.user.id }
+    });
+
+    res.status(200).json(recommendations);
+  } catch (err) {
+    console.error('Error fetching recommendations:', err.message);
+    res.status(500).json({ message: 'Error fetching recommendations' });
+  }
+});
 app.get('/api/profile/:id', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -304,7 +319,28 @@ app.get('/api/profile/:id', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+app.delete('/api/friends/:id', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    const friendId = req.params.id;
 
+    // Remove friend from the user's friend list
+    user.friends = user.friends.filter(friend => friend.toString() !== friendId);
+    await user.save();
+
+    // Also remove the user from the friend's friend list
+    const friend = await User.findById(friendId);
+    if (friend) {
+      friend.friends = friend.friends.filter(friend => friend.toString() !== req.user.id);
+      await friend.save();
+    }
+
+    res.status(200).json({ message: 'Friend removed successfully' });
+  } catch (error) {
+    console.error('Error removing friend:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 
 
 
