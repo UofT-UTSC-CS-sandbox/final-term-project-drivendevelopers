@@ -58,6 +58,7 @@ const Discussions = () => {
   const navigate = useNavigate();
   const [discussions, setDiscussions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const fetchDiscussions = async () => {
@@ -86,16 +87,31 @@ const Discussions = () => {
     navigate(`/discussion/${discussionId}`);
   };
 
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const filteredDiscussions = discussions.filter(discussion =>
+    discussion.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    discussion.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div style={styles.container}>
       <h1 style={styles.header}>Discussions</h1>
       <button style={styles.button} onClick={handleNewDiscussion}>New Discussion</button>
-      <input type="text" placeholder="Search discussions..." style={styles.searchBar} />
+      <input
+        type="text"
+        placeholder="Search discussions..."
+        style={styles.searchBar}
+        value={searchQuery}
+        onChange={handleSearchChange}
+      />
       {loading ? (
         <p>Loading discussions...</p>
       ) : (
         <ul style={styles.discussionList}>
-          {discussions.map(discussion => (
+          {filteredDiscussions.map(discussion => (
             <li 
               key={discussion._id} 
               style={styles.discussionItem} 
