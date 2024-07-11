@@ -135,7 +135,7 @@ const DiscussionDetail = () => {
   return (
     <div style={styles.container}>
       <h1 style={styles.header}>{discussion.title}</h1>
-      <p>Posted by: {discussion.userId.email}</p>
+      <p>Posted by: {discussion.userId?.email}</p>
       <p>Date: {new Date(discussion.createdAt).toLocaleString()}</p>
       <p>{discussion.description}</p>
       {discussion.images && discussion.images.length > 0 && (
@@ -150,7 +150,7 @@ const DiscussionDetail = () => {
         {comments.map((comment) => (
           <div key={comment._id} style={styles.comment}>
             <p>{comment.content}</p>
-            <p><small>Posted by: {comment.userId.email} on {new Date(comment.createdAt).toLocaleString()}</small></p>
+            <p><small>Posted by: {comment.userId?.email} on {new Date(comment.createdAt).toLocaleString()}</small></p>
           </div>
         ))}
         <form onSubmit={handleCommentSubmit} style={styles.commentForm}>
