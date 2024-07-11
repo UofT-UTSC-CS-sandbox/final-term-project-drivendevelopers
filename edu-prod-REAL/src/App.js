@@ -13,6 +13,7 @@ import Notifications from './Notifications';
 import FriendList from './FriendList';
 import Discussions from './discussionBoard/Discussions';
 import NewDiscussion from './discussionBoard/NewDiscussion';
+import DiscussionDetail from './discussionBoard/DiscussionDetail';
 
 const App = () => {
   return (
@@ -31,6 +32,7 @@ const App = () => {
         <Route path="/friend-list" element={<FriendList />} />
         <Route path="/discussions" element={<Discussions />} />
         <Route path="/new-discussion" element={<NewDiscussion />} />
+        <Route path="/discussion/:discussionId" element={<DiscussionDetail />} />
       </Routes>
     </Router>
   );

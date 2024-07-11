@@ -50,15 +50,7 @@ const styles = {
     marginBottom: '10px',
     borderRadius: '5px',
     backgroundColor: '#f9f9f9',
-  },
-  discussionImages: {
-    display: 'flex',
-    gap: '10px',
-    marginTop: '10px',
-  },
-  discussionImage: {
-    maxWidth: '100px',
-    borderRadius: '5px',
+    cursor: 'pointer',
   },
 };
 
@@ -90,6 +82,10 @@ const Discussions = () => {
     navigate('/new-discussion');
   };
 
+  const handleDiscussionClick = (discussionId) => {
+    navigate(`/discussion/${discussionId}`);
+  };
+
   return (
     <div style={styles.container}>
       <h1 style={styles.header}>Discussions</h1>
@@ -100,16 +96,12 @@ const Discussions = () => {
       ) : (
         <ul style={styles.discussionList}>
           {discussions.map(discussion => (
-            <li key={discussion._id} style={styles.discussionItem}>
+            <li 
+              key={discussion._id} 
+              style={styles.discussionItem} 
+              onClick={() => handleDiscussionClick(discussion._id)}
+            >
               <h2>{discussion.title}</h2>
-              <p>{discussion.description}</p>
-              {discussion.images && discussion.images.length > 0 && (
-                <div style={styles.discussionImages}>
-                  {discussion.images.map((image, index) => (
-                    <img key={index} src={`http://localhost:5000/${image}`} alt={`Discussion ${index}`} style={styles.discussionImage} />
-                  ))}
-                </div>
-              )}
               <p>Posted by: {discussion.userId.email}</p>
               <p>Date: {new Date(discussion.createdAt).toLocaleString()}</p>
             </li>

@@ -8,6 +8,7 @@ const path = require('path');
 const User = require('./User');
 const Project = require('./Project');
 const Discussion = require('./Discussion');
+const Comment = require('./Comment');
 require('dotenv').config();
 const app = express();
 app.use(express.json());
@@ -376,5 +377,99 @@ app.get('/api/discussions', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch discussions', error });
   }
 });
+
+/*
+// fetch info for a single post (DiscussionDetail.js)
+app.get('/api/discussions/:id', authenticateToken, async (req, res) => {
+  try {
+    const discussion = await Discussion.findById(req.params.id).populate('userId', 'email');
+    if (!discussion) {
+      return res.status(404).json({ message: 'Discussion not found' });
+    }
+    res.status(200).json(discussion);
+  } catch (err) {
+    console.error('Error fetching discussion:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// endpoints for discussion post commenting
+app.post('/api/discussions/:discussionId/comments', authenticateToken, async (req, res) => {
+  const { content } = req.body;
+
+  try {
+    const newComment = new Comment({
+      content,
+      discussionId: req.params.discussionId,
+      userId: req.user.id,
+    });
+
+    await newComment.save();
+    res.status(201).json({ message: 'Comment added successfully', comment: newComment });
+  } catch (err) {
+    console.error('Error adding comment:', err.message);
+    res.status(500).json({ message: 'Error adding comment' });
+  }
+});
+
+app.get('/api/discussions/:discussionId/comments', async (req, res) => {
+  try {
+    const comments = await Comment.find({ discussion: req.params.discussionId }).populate('user', 'fullName profilePicture');
+    res.status(200).json(comments);
+  } catch (err) {
+    console.error('Error fetching comments:', err.message);
+    res.status(500).json({ message: 'Error fetching comments' });
+  }
+});
+*/
+// endpoints for discussion post commenting
+app.post('/api/discussions/:discussionId/comments', authenticateToken, async (req, res) => {
+  const { content } = req.body;
+
+  try {
+    const newComment = new Comment({
+      content,
+      discussionId: req.params.discussionId,
+      userId: req.user.id,
+    });
+
+    await newComment.save();
+    // Optionally, populate the user information in the response
+    await newComment.populate('userId', 'email fullName profilePicture').execPopulate();
+
+    res.status(201).json({ message: 'Comment added successfully', comment: newComment });
+  } catch (err) {
+    console.error('Error adding comment:', err.message);
+    res.status(500).json({ message: 'Error adding comment' });
+  }
+});
+
+// Adjusted to populate 'userId' correctly in the comments fetching endpoint
+app.get('/api/discussions/:discussionId/comments', async (req, res) => {
+  try {
+    const comments = await Comment.find({ discussionId: req.params.discussionId })
+      .populate('userId', 'email fullName profilePicture'); // Ensure correct population
+
+    res.status(200).json(comments);
+  } catch (err) {
+    console.error('Error fetching comments:', err.message);
+    res.status(500).json({ message: 'Error fetching comments' });
+  }
+});
+
+// Adjusted endpoint to use 'discussionId' instead of 'discussion'
+app.get('/api/discussions/:id', authenticateToken, async (req, res) => {
+  try {
+    const discussion = await Discussion.findById(req.params.id).populate('userId', 'email');
+    if (!discussion) {
+      return res.status(404).json({ message: 'Discussion not found' });
+    }
+    res.status(200).json(discussion);
+  } catch (err) {
+    console.error('Error fetching discussion:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
