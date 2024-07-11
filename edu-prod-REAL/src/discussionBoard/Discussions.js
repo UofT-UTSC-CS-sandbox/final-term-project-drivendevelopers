@@ -38,6 +38,25 @@ const styles = {
     marginBottom: '20px',
     fontSize: '1rem',
   },
+  filterContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    width: '100%',
+    maxWidth: '600px',
+    marginBottom: '20px',
+  },
+  filterText: {
+    marginRight: '10px',
+    fontSize: '1rem',
+  },
+  filterSelect: {
+    padding: '10px',
+    borderRadius: '20px',
+    border: '1px solid #ccc',
+    fontSize: '1rem',
+  },
   discussionList: {
     width: '100%',
     maxWidth: '800px',
@@ -59,6 +78,7 @@ const Discussions = () => {
   const [discussions, setDiscussions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortCriteria, setSortCriteria] = useState('newest');
 
   useEffect(() => {
     const fetchDiscussions = async () => {
@@ -91,10 +111,29 @@ const Discussions = () => {
     setSearchQuery(event.target.value);
   };
 
-  const filteredDiscussions = discussions.filter(discussion =>
-    discussion.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    discussion.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const handleSortChange = (event) => {
+    setSortCriteria(event.target.value);
+  };
+
+  const filteredDiscussions = discussions
+    .filter(discussion =>
+      discussion.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      discussion.description.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .sort((a, b) => {
+      switch (sortCriteria) {
+        case 'newest':
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        case 'oldest':
+          return new Date(a.createdAt) - new Date(b.createdAt);
+        case 'alphaAsc':
+          return a.title.localeCompare(b.title);
+        case 'alphaDesc':
+          return b.title.localeCompare(a.title);
+        default:
+          return 0;
+      }
+    });
 
   return (
     <div style={styles.container}>
@@ -107,18 +146,27 @@ const Discussions = () => {
         value={searchQuery}
         onChange={handleSearchChange}
       />
+      <div style={styles.filterContainer}>
+        <span style={styles.filterText}>Filter by:</span>
+        <select value={sortCriteria} onChange={handleSortChange} style={styles.filterSelect}>
+          <option value="newest">Newest</option>
+          <option value="oldest">Oldest</option>
+          <option value="alphaAsc">Alphabetical (A-Z)</option>
+          <option value="alphaDesc">Alphabetical (Z-A)</option>
+        </select>
+      </div>
       {loading ? (
         <p>Loading discussions...</p>
       ) : (
         <ul style={styles.discussionList}>
           {filteredDiscussions.map(discussion => (
-            <li 
-              key={discussion._id} 
-              style={styles.discussionItem} 
+            <li
+              key={discussion._id}
+              style={styles.discussionItem}
               onClick={() => handleDiscussionClick(discussion._id)}
             >
               <h2>{discussion.title}</h2>
-              <p>Posted by: {discussion.userId.email}</p>
+              <p>Posted by: {discussion.userId?.email}</p>
               <p>Date: {new Date(discussion.createdAt).toLocaleString()}</p>
             </li>
           ))}
