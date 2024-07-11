@@ -7,6 +7,7 @@ const multer = require('multer');
 const path = require('path');
 const User = require('./User');
 const Project = require('./Project');
+const Discussion = require('./Discussion');
 require('dotenv').config();
 const app = express();
 app.use(express.json());
@@ -342,6 +343,38 @@ app.delete('/api/friends/:id', authenticateToken, async (req, res) => {
   }
 });
 
+// Discussion board endpoints
+app.post('/api/discussions', authenticateToken, upload.array('images'), async (req, res) => {
+  try {
+    const { title, description } = req.body;
+    const userId = req.user.id;
 
+    const images = req.files.map(file => file.path);
+
+    const newDiscussion = new Discussion({
+      title,
+      description,
+      images,
+      userId
+    });
+
+    await newDiscussion.save();
+
+    res.status(201).json(newDiscussion);
+  } catch (error) {
+    console.error('Error creating discussion:', error);
+    res.status(500).json({ message: 'Failed to create discussion', error });
+  }
+});
+
+app.get('/api/discussions', authenticateToken, async (req, res) => {
+  try {
+    const discussions = await Discussion.find().populate('userId', 'email');
+    res.status(200).json(discussions);
+  } catch (error) {
+    console.error('Error fetching discussions:', error);
+    res.status(500).json({ message: 'Failed to fetch discussions', error });
+  }
+});
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
