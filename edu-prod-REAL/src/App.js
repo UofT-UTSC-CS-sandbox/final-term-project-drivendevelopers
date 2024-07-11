@@ -11,6 +11,8 @@ import AddProject from './projects/AddProject';
 import SearchUser from './SearchUser';
 import Notifications from './Notifications';
 import FriendList from './FriendList';
+import Discussions from './discussionBoard/Discussions';
+import NewDiscussion from './discussionBoard/NewDiscussion';
 
 const App = () => {
   return (
@@ -27,6 +29,8 @@ const App = () => {
         <Route path="/connect" element={<SearchUser />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/friend-list" element={<FriendList />} />
+        <Route path="/discussions" element={<Discussions />} />
+        <Route path="/new-discussion" element={<NewDiscussion />} />
       </Routes>
     </Router>
   );
