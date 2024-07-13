@@ -12,7 +12,8 @@ const userSchema = new mongoose.Schema({
   interests: { type: [String], default: [] },
   courses: { type: [String], default: [] },
   friendRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-  friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] 
+  friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  savedGpas: { type: [{ courses: Array, gpa: String }], default: [] }, // Add this line
 });
 
 const User = mongoose.model('User', userSchema);

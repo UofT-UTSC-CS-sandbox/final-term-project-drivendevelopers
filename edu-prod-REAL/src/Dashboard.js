@@ -306,7 +306,8 @@ const Dashboard = () => {
           <h2 style={styles.subTitle}>Tools</h2>
           <button style={styles.button} onClick={() => handleNavigation('/eventCalendar')}>Event Calendar</button>
           <button style={styles.button} onClick={() => handleNavigation('/discussions')}>Discussions</button>
-          <button style={styles.button} onClick={() => handleNavigation('/gpaCalc')}>GPA Calculator</button>
+         {/* <button style={styles.button} onClick={() => handleNavigation('/gpaCalc')}>GPA Calculator</button>*/}
+          <button style={styles.button} onClick={() => handleNavigation('/gpa-calc')}>GPA Calculator</button>
         </div>
         <div style={styles.column}>
           <h2 style={styles.subTitle}>Current Projects</h2>

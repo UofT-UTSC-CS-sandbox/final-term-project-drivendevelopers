@@ -36,6 +36,7 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'uploads/');
@@ -46,6 +47,52 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
+
+app.post('/api/gpa', authenticateToken, async (req, res) => {
+  const { courses, gpa } = req.body;
+
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    user.savedGpas.push({ gpa, courses });
+    await user.save();
+
+    res.status(201).json({ message: 'GPA calculation saved successfully' });
+  } catch (err) {
+    console.error('Error saving GPA calculation:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+app.get('/api/gpa', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    res.status(200).json(user.savedGpas);
+  } catch (err) {
+    console.error('Error fetching saved GPAs:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+app.delete('/api/gpa/:id', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const gpaId = req.params.id;
+    user.savedGpas = user.savedGpas.filter((_, index) => index.toString() !== gpaId);
+
+    await user.save();
+    res.status(200).json({ message: 'Saved GPA deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting saved GPA:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 
 app.post('/register', async (req, res) => {
   const { email, password, confirmPassword } = req.body;
