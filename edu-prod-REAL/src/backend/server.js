@@ -9,7 +9,9 @@ const User = require('./User');
 const Project = require('./Project');
 const Discussion = require('./Discussion');
 const Comment = require('./Comment');
+const Event = require('./Event');
 require('dotenv').config();
+
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -18,12 +20,9 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = 'mongodb+srv://c01Project:EduProd1@cluster0.ieebveo.mongodb.net/edu-prod?retryWrites=true&w=majority';
 
-mongoose.connect(MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('MongoDB connected'))
-.catch(err => console.error('MongoDB connection error:', err));
+mongoose.connect(MONGO_URI)
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
 const authenticateToken = (req, res, next) => {
   const token = req.headers['authorization'] && req.headers['authorization'].split(' ')[1];
@@ -35,7 +34,6 @@ const authenticateToken = (req, res, next) => {
     next();
   });
 };
-
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -92,7 +90,6 @@ app.delete('/api/gpa/:id', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-
 
 app.post('/register', async (req, res) => {
   const { email, password, confirmPassword } = req.body;
@@ -229,6 +226,30 @@ app.get('/api/profile', authenticateToken, async (req, res) => {
   }
 });
 
+app.get('/api/profile/:id', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const profileData = {
+      email: user.email,
+      fullName: user.fullName,
+      gpa: user.gpa,
+      programName: user.programName,
+      yearOfStudy: user.yearOfStudy,
+      description: user.description,
+      profilePicture: user.profilePicture,
+      interests: user.interests,
+      courses: user.courses,
+    };
+
+    res.status(200).json(profileData);
+  } catch (err) {
+    console.error('Error fetching profile:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 app.post('/api/search-users', authenticateToken, async (req, res) => {
   const { name, academicInterests, courses, program, year } = req.body;
   const query = {};
@@ -247,7 +268,6 @@ app.post('/api/search-users', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Error searching users' });
   }
 });
-// src/backend/server.js
 
 app.post('/api/friend-request', authenticateToken, async (req, res) => {
   const { userId } = req.body;
@@ -320,6 +340,7 @@ app.post('/api/friend-request/accept/:id', authenticateToken, async (req, res) =
     res.status(500).json({ message: 'Server error' });
   }
 });
+
 app.get('/api/friends', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).populate('friends', 'fullName profilePicture');
@@ -329,45 +350,7 @@ app.get('/api/friends', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-app.get('/api/connections', authenticateToken, async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id);
-    if (!user) return res.status(404).json({ message: 'User not found' });
 
-    const recommendations = await User.find({
-      interests: { $in: user.interests },
-      _id: { $ne: req.user.id }
-    });
-
-    res.status(200).json(recommendations);
-  } catch (err) {
-    console.error('Error fetching recommendations:', err.message);
-    res.status(500).json({ message: 'Error fetching recommendations' });
-  }
-});
-app.get('/api/profile/:id', authenticateToken, async (req, res) => {
-  try {
-    const user = await User.findById(req.params.id);
-    if (!user) return res.status(404).json({ message: 'User not found' });
-
-    const profileData = {
-      email: user.email,
-      fullName: user.fullName,
-      gpa: user.gpa,
-      programName: user.programName,
-      yearOfStudy: user.yearOfStudy,
-      description: user.description,
-      profilePicture: user.profilePicture,
-      interests: user.interests,
-      courses: user.courses,
-    };
-
-    res.status(200).json(profileData);
-  } catch (err) {
-    console.error('Error fetching profile:', err.message);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
 app.delete('/api/friends/:id', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -387,11 +370,10 @@ app.delete('/api/friends/:id', authenticateToken, async (req, res) => {
     res.status(200).json({ message: 'Friend removed successfully' });
   } catch (error) {
     console.error('Error removing friend:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status500json({ message: 'Server error' });
   }
 });
 
-// Discussion board endpoints
 app.post('/api/discussions', authenticateToken, upload.array('images'), async (req, res) => {
   try {
     const { title, description } = req.body;
@@ -425,41 +407,18 @@ app.get('/api/discussions', authenticateToken, async (req, res) => {
   }
 });
 
-
-/*
-app.post('/api/discussions/:discussionId/comments', authenticateToken, async (req, res) => {
-  const { content } = req.body;
-
+app.get('/api/discussions/:id', authenticateToken, async (req, res) => {
   try {
-    const newComment = new Comment({
-      content,
-      discussionId: req.params.discussionId,
-      userId: req.user.id,
-    });
-
-    await newComment.save();
-    //await newComment.populate('userId', 'email fullName profilePicture').execPopulate();
-    await newComment.populate('userId', 'email fullName profilePicture');
-
-    res.status(201).json({ message: 'Comment added successfully', comment: newComment });
+    const discussion = await Discussion.findById(req.params.id).populate('userId', 'email');
+    if (!discussion) {
+      return res.status(404).json({ message: 'Discussion not found' });
+    }
+    res.status(200).json(discussion);
   } catch (err) {
-    console.error('Error adding comment:', err.message);
-    res.status(500).json({ message: 'Error adding comment' });
+    console.error('Error fetching discussion:', err.message);
+    res.status(500).json({ message: 'Server error' });
   }
 });
-
-app.get('/api/discussions/:discussionId/comments', async (req, res) => {
-  try {
-    const comments = await Comment.find({ discussionId: req.params.discussionId })
-      .populate('userId', 'email fullName profilePicture');
-
-    res.status(200).json(comments);
-  } catch (err) {
-    console.error('Error fetching comments:', err.message);
-    res.status(500).json({ message: 'Error fetching comments' });
-  }
-});
-*/
 
 app.post('/api/discussions/:discussionId/comments', authenticateToken, async (req, res) => {
   const { content } = req.body;
@@ -493,20 +452,253 @@ app.get('/api/discussions/:discussionId/comments', async (req, res) => {
   }
 });
 
-
-app.get('/api/discussions/:id', authenticateToken, async (req, res) => {
+app.post('/api/events', authenticateToken, async (req, res) => {
   try {
-    const discussion = await Discussion.findById(req.params.id).populate('userId', 'email');
-    if (!discussion) {
-      return res.status(404).json({ message: 'Discussion not found' });
-    }
-    res.status(200).json(discussion);
+    const { title, location, start, end, friends } = req.body;
+    const newEvent = new Event({
+      title,
+      location,
+      start,
+      end,
+      createdBy: req.user.id,
+      invitedFriends: friends,
+      inviteStatus: friends.map(friendId => ({ userId: friendId, status: 'Pending', _id: new mongoose.Types.ObjectId() }))
+    });
+    await newEvent.save();
+
+    // Notify friends about the event
+    await Promise.all(friends.map(async (friendId) => {
+      const user = await User.findById(friendId);
+      if (user) {
+        user.notifications.push({
+          message: `You have been invited to an event: ${title}`,
+          date: new Date(),
+          eventId: newEvent._id,
+          inviteId: newEvent.inviteStatus.find(invite => invite.userId.toString() === friendId.toString())._id,
+        });
+        await user.save();
+      }
+    }));
+
+    res.status(201).json(newEvent);
+  } catch (error) {
+    console.error('Error creating event:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+app.post('/api/events/:eventId/accept/:inviteId', authenticateToken, async (req, res) => {
+  try {
+    const { eventId, inviteId } = req.params;
+    const event = await Event.findById(eventId);
+    if (!event) return res.status(404).json({ message: 'Event not found' });
+
+    const invite = event.inviteStatus.id(inviteId);
+    if (!invite) return res.status(404).json({ message: 'Invite not found' });
+
+    invite.status = 'Accepted';
+    event.attendees.push(req.user.id);
+    await event.save();
+
+    const user = await User.findById(req.user.id);
+    user.notifications = user.notifications.filter(notification => notification.eventId.toString() !== eventId);
+    await user.save();
+
+    res.status(200).json({ message: 'Event invite accepted', event });
   } catch (err) {
-    console.error('Error fetching discussion:', err.message);
+    console.error('Error accepting event invite:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+app.post('/api/events/:eventId/reject/:inviteId', authenticateToken, async (req, res) => {
+  try {
+    const { eventId, inviteId } = req.params;
+    const event = await Event.findById(eventId);
+    if (!event) return res.status(404).json({ message: 'Event not found' });
+
+    const invite = event.inviteStatus.id(inviteId);
+    if (!invite) return res.status(404).json({ message: 'Invite not found' });
+
+    invite.status = 'Rejected';
+    await event.save();
+
+    const user = await User.findById(req.user.id);
+    user.notifications = user.notifications.filter(notification => notification.eventId.toString() !== eventId);
+    await user.save();
+
+    res.status(200).json({ message: 'Event invite rejected' });
+  } catch (err) {
+    console.error('Error rejecting event invite:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+app.post('/api/events/:eventId/accept', authenticateToken, async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    const event = await Event.findById(eventId);
+    if (!event) return res.status(404).json({ message: 'Event not found' });
+
+    const invite = event.inviteStatus.find(invite => invite.userId && invite.userId.toString() === req.user.id);
+    if (!invite) return res.status(404).json({ message: 'Invite not found' });
+
+    invite.status = 'Accepted';
+    event.attendees.push(req.user.id);
+    event.invitedFriends = event.invitedFriends.filter(friendId => friendId && friendId.toString() !== req.user.id);
+    await event.save();
+
+    // Remove the specific notification related to this event
+    const user = await User.findById(req.user.id);
+    user.notifications = user.notifications.filter(notification => notification.eventId.toString() !== eventId);
+    await user.save();
+
+    res.status(200).json({ message: 'Event invite accepted', event });
+  } catch (err) {
+    console.error('Error accepting event invite:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+app.post('/api/events/:eventId/reject', authenticateToken, async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    const event = await Event.findById(eventId);
+    if (!event) return res.status(404).json({ message: 'Event not found' });
+
+    const invite = event.inviteStatus.find(invite => invite.userId && invite.userId.toString() === req.user.id);
+    if (!invite) return res.status(404).json({ message: 'Invite not found' });
+
+    invite.status = 'Rejected';
+    event.invitedFriends = event.invitedFriends.filter(friendId => friendId && friendId.toString() !== req.user.id);
+    await event.save();
+
+    // Remove the specific notification related to this event
+    const user = await User.findById(req.user.id);
+    user.notifications = user.notifications.filter(notification => notification.eventId.toString() !== eventId);
+    await user.save();
+
+    res.status(200).json({ message: 'Event invite rejected' });
+  } catch (err) {
+    console.error('Error rejecting event invite:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+app.get('/api/events/invites', authenticateToken, async (req, res) => {
+  try {
+    const events = await Event.find({ 'inviteStatus.userId': req.user.id })
+      .populate('createdBy', 'fullName')
+      .populate('invitedFriends', 'fullName');
+
+    const filteredEvents = events.filter(event => {
+      const invite = event.inviteStatus.find(invite => invite.userId.toString() === req.user.id);
+      return invite && invite.status === 'Pending';
+    });
+
+    res.status(200).json(filteredEvents);
+  } catch (err) {
+    console.error('Error fetching invites:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+app.get('/api/events', authenticateToken, async (req, res) => {
+  try {
+    const events = await Event.find({
+      $or: [
+        { createdBy: req.user.id },
+        { attendees: req.user.id }
+      ]
+    }).populate('createdBy', 'fullName').populate('attendees', 'fullName'); // Populating createdBy and attendees with full name
+
+    res.status(200).json(events);
+  } catch (error) {
+    console.error('Error fetching events:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+app.post('/api/notifications', authenticateToken, async (req, res) => {
+  const { userId, message } = req.body;
+  try {
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    user.notifications.push({ message, date: new Date() });
+    await user.save();
+    res.status(201).json({ message: 'Notification sent successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+app.get('/api/notifications', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    res.status(200).json(user.notifications);
+  } catch (error) {
+    console.error('Error fetching notifications:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+app.delete('/api/events/:eventId', authenticateToken, async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    const event = await Event.findById(eventId);
+
+    if (!event) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+
+    // Check if the user is the creator of the event
+    if (event.createdBy.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'You are not authorized to delete this event' });
+    }
+
+    // Remove the event from the database
+    await event.remove();
+    res.status(200).json({ message: 'Event deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting event:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+app.post('/api/events/:eventId/remove-attendee', authenticateToken, async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    const event = await Event.findById(eventId);
+
+    if (!event) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+
+    // Check if the user is an attendee of the event
+    if (event.attendees.includes(req.user.id)) {
+      event.attendees = event.attendees.filter(attendee => attendee.toString() !== req.user.id);
+      await event.save();
+      return res.status(200).json({ message: 'You have been removed from the event', event });
+    }
+
+    // If user is the creator, handle event deletion separately
+    if (event.createdBy.toString() === req.user.id) {
+      return res.status(403).json({ message: 'Use a different endpoint to delete the event' });
+    }
+
+    res.status(403).json({ message: 'You are not authorized to remove yourself from this event' });
+  } catch (err) {
+    console.error('Error removing attendee:', err.message);
     res.status(500).json({ message: 'Server error' });
   }
 });
 
 
+// Add connections routes
+const connectionsRoutes = require('../connections');
+app.use('/api', connectionsRoutes);
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

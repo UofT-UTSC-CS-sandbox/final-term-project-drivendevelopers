@@ -46,9 +46,11 @@ const styles = {
 
 const Notifications = () => {
   const [friendRequests, setFriendRequests] = useState([]);
+  const [eventInvites, setEventInvites] = useState([]);
 
   useEffect(() => {
     fetchFriendRequests();
+    fetchEventInvites();
   }, []);
 
   const fetchFriendRequests = async () => {
@@ -67,9 +69,33 @@ const Notifications = () => {
       }
 
       const data = await response.json();
+      console.log('Friend Requests:', data);
       setFriendRequests(data);
     } catch (error) {
       console.error('Error fetching friend requests:', error);
+    }
+  };
+
+  const fetchEventInvites = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5000/api/events/invites', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch event invites');
+      }
+
+      const data = await response.json();
+      console.log('Event Invites:', data);
+      setEventInvites(data);
+    } catch (error) {
+      console.error('Error fetching event invites:', error);
     }
   };
 
@@ -115,10 +141,56 @@ const Notifications = () => {
     }
   };
 
+  const handleAcceptEvent = async (eventId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:5000/api/events/${eventId}/accept`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to accept event invite');
+      }
+
+      setEventInvites(eventInvites.filter(event => event._id !== eventId));
+
+      // Refetch events to update the calendar
+      fetchEvents();
+    } catch (error) {
+      console.error('Error accepting event invite:', error);
+    }
+  };
+
+  const handleRejectEvent = async (eventId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:5000/api/events/${eventId}/reject`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to reject event invite');
+      }
+
+      setEventInvites(eventInvites.filter(event => event._id !== eventId));
+    } catch (error) {
+      console.error('Error rejecting event invite:', error);
+    }
+  };
+
   return (
     <div style={styles.container}>
       <h1 style={styles.title}>Notifications</h1>
       <div style={styles.notificationContainer}>
+        <h2>Friend Requests</h2>
         {friendRequests.length > 0 ? (
           friendRequests.map((request) => (
             <div key={request._id} style={styles.notificationItem}>
@@ -129,6 +201,20 @@ const Notifications = () => {
           ))
         ) : (
           <p>No friend requests</p>
+        )}
+      </div>
+      <div style={styles.notificationContainer}>
+        <h2>Event Invites</h2>
+        {eventInvites.length > 0 ? (
+          eventInvites.map((event) => (
+            <div key={event._id} style={styles.notificationItem}>
+              <p><strong>{event.title}</strong> on {new Date(event.start).toLocaleString()} at {event.location}</p>
+              <button style={styles.button} onClick={() => handleAcceptEvent(event._id)}>Accept</button>
+              <button style={styles.button} onClick={() => handleRejectEvent(event._id)}>Reject</button>
+            </div>
+          ))
+        ) : (
+          <p>No event invites</p>
         )}
       </div>
     </div>

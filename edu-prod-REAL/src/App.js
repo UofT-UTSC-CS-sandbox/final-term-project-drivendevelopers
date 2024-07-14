@@ -14,8 +14,8 @@ import FriendList from './FriendList';
 import Discussions from './discussionBoard/Discussions';
 import NewDiscussion from './discussionBoard/NewDiscussion';
 import DiscussionDetail from './discussionBoard/DiscussionDetail';
-import GpaCalculator from './GpaCalculator'; // Import the new component
-
+import GpaCalculator from './GpaCalculator'; 
+import EventCalendar from './EventCalendar'; // Import the EventCalendar component
 
 const App = () => {
   return (
@@ -35,8 +35,8 @@ const App = () => {
         <Route path="/discussions" element={<Discussions />} />
         <Route path="/new-discussion" element={<NewDiscussion />} />
         <Route path="/discussion/:discussionId" element={<DiscussionDetail />} />
-        <Route path="/gpa-calc" element={<GpaCalculator />} /> {/* Add the new route */}
-
+        <Route path="/gpa-calc" element={<GpaCalculator />} />
+        <Route path="/eventCalendar" element={<EventCalendar />} /> {/* Add the new route */}
       </Routes>
     </Router>
   );

@@ -13,7 +13,8 @@ const userSchema = new mongoose.Schema({
   courses: { type: [String], default: [] },
   friendRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-  savedGpas: { type: [{ courses: Array, gpa: String }], default: [] }, // Add this line
+  notifications: [{ message: String, date: Date, eventId: mongoose.Schema.Types.ObjectId, inviteId: mongoose.Schema.Types.ObjectId }],
+  savedGpas: { type: [{ courses: Array, gpa: String }], default: [] },
 });
 
 const User = mongoose.model('User', userSchema);
