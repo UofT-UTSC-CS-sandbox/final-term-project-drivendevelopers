@@ -159,7 +159,7 @@ const Notifications = () => {
       setEventInvites(eventInvites.filter(event => event._id !== eventId));
 
       // Refetch events to update the calendar
-      fetchEvents();
+      
     } catch (error) {
       console.error('Error accepting event invite:', error);
     }
