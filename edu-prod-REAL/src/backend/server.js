@@ -47,13 +47,13 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 app.post('/api/gpa', authenticateToken, async (req, res) => {
-  const { courses, gpa } = req.body;
+  const { courses, gpa, type } = req.body;
 
   try {
     const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ message: 'User not found' });
 
-    user.savedGpas.push({ gpa, courses });
+    user.savedGpas.push({ gpa, courses, type });
     await user.save();
 
     res.status(201).json({ message: 'GPA calculation saved successfully' });
@@ -62,7 +62,6 @@ app.post('/api/gpa', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-
 app.get('/api/gpa', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);

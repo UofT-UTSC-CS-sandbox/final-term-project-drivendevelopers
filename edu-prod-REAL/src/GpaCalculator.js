@@ -90,9 +90,9 @@ const GpaCalculator = () => {
     return (totalGradePoints / totalWeight).toFixed(2);
   };
 
-  const handleSaveGpa = async () => {
+  const handleSaveGpa = async (type) => {
     const token = localStorage.getItem('token');
-    const currentGpa = calculateGpa(courses);
+    const gpa = type === 'current' ? calculateGpa(courses) : potentialGpa;
 
     try {
       const response = await fetch('http://localhost:5000/api/gpa', {
@@ -101,15 +101,20 @@ const GpaCalculator = () => {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ courses, gpa: currentGpa }),
+        body: JSON.stringify({
+          courses: type === 'current' ? courses : potentialCourses,
+          gpa,
+          type,
+        }),
       });
 
       if (!response.ok) {
         throw new Error('Failed to save GPA calculation');
       }
 
-      setSavedGpas([...savedGpas, { courses: [...courses], gpa: currentGpa }]);
+      setSavedGpas([...savedGpas, { courses: type === 'current' ? [...courses] : [...potentialCourses], gpa, type }]);
       setCourses([{ name: '', weight: '0.5', grade: '' }]);
+      setPotentialCourses([{ name: '', weight: '0.5', grade: '' }]);
     } catch (err) {
       console.error('Error saving GPA calculation:', err.message);
     }
@@ -330,12 +335,12 @@ const GpaCalculator = () => {
         {potentialGpa && <h2>Potential GPA: {potentialGpa}</h2>}
       </div>
       <button
-        onClick={handleSaveGpa}
-        style={hoveredButton === 'saveGpa' ? { ...styles.button, ...styles.buttonHover } : styles.button}
-        onMouseEnter={() => handleMouseEnter('saveGpa')}
+        onClick={() => handleSaveGpa('potential')}
+        style={hoveredButton === 'savePotentialGpa' ? { ...styles.button, ...styles.buttonHover } : styles.button}
+        onMouseEnter={() => handleMouseEnter('savePotentialGpa')}
         onMouseLeave={handleMouseLeave}
       >
-        Save GPA
+        Save Potential GPA
       </button>
       <button
         onClick={handleReset}
@@ -350,7 +355,7 @@ const GpaCalculator = () => {
           <h2>Saved GPAs</h2>
           {savedGpas.map((entry, index) => (
             <div key={index} style={styles.savedGpa}>
-              <p>GPA: {entry.gpa}</p>
+              <p>GPA ({entry.type === 'current' ? 'Current' : 'Potential'}): {entry.gpa}</p>
               <ul>
                 {entry.courses.map((course, idx) => (
                   <li key={idx}>
