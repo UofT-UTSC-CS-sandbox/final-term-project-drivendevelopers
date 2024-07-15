@@ -16,13 +16,14 @@ const EventCalendar = () => {
   const [currentMonthYear, setCurrentMonthYear] = useState('');
   const [eventInvites, setEventInvites] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
+  const [filter, setFilter] = useState('');
 
   useEffect(() => {
     fetchCurrentUser();
     fetchFriends();
     fetchEvents();
     fetchEventInvites();
-  }, []);
+  }, [filter]);
 
   const fetchCurrentUser = async () => {
     const token = localStorage.getItem('token');
@@ -67,7 +68,7 @@ const EventCalendar = () => {
   const fetchEvents = async () => {
     const token = localStorage.getItem('token');
     try {
-      const response = await fetch('http://localhost:5000/api/events', {
+      const response = await fetch(`http://localhost:5000/api/events${filter ? `?filter=${filter}` : ''}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -227,7 +228,7 @@ const EventCalendar = () => {
         throw new Error('Failed to remove attendee');
       }
 
-      fetchEvents(); // Refresh events after removing attendee
+      fetchEvents(); 
       setModalOpen(false);
     } catch (error) {
       console.error('Error removing attendee:', error);
@@ -248,8 +249,8 @@ const EventCalendar = () => {
         throw new Error('Failed to accept invite');
       }
 
-      fetchEvents(); // Refresh events after accepting
-      fetchEventInvites(); // Refresh invites after accepting
+      fetchEvents(); 
+      fetchEventInvites(); 
     } catch (error) {
       console.error('Error accepting invite:', error);
     }
@@ -269,8 +270,8 @@ const EventCalendar = () => {
         throw new Error('Failed to reject invite');
       }
 
-      fetchEvents(); // Refresh events after rejecting
-      fetchEventInvites(); // Refresh invites after rejecting
+      fetchEvents(); 
+      fetchEventInvites(); 
     } catch (error) {
       console.error('Error rejecting invite:', error);
     }
@@ -280,6 +281,17 @@ const EventCalendar = () => {
     <div>
       <div style={{ textAlign: 'center', margin: '20px 0' }}>
         <h2>{currentMonthYear}</h2>
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+        <button className="filter-button" onClick={() => setFilter('')}>
+          Show All Events
+        </button>
+        <button className="filter-button" onClick={() => setFilter('created')}>
+          Show Created Events
+        </button>
+        <button className="filter-button" onClick={() => setFilter('attendee')}>
+          Show Attendee Events
+        </button>
       </div>
       <FullCalendar
         plugins={[dayGridPlugin, interactionPlugin]}
@@ -421,6 +433,19 @@ const EventCalendar = () => {
         .modal-content button:last-of-type {
           background-color: #dc3545;
           color: #fff;
+        }
+        .filter-button {
+          background-color: #007bff;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          padding: 10px 20px;
+          cursor: pointer;
+          margin-right: 10px;
+          transition: background-color 0.3s ease;
+        }
+        .filter-button:hover {
+          background-color: #0056b3;
         }
       `}</style>
     </div>

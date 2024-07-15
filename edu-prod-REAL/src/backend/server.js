@@ -354,12 +354,8 @@ app.delete('/api/friends/:id', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
     const friendId = req.params.id;
-
-    // Remove friend from the user's friend list
     user.friends = user.friends.filter(friend => friend.toString() !== friendId);
     await user.save();
-
-    // Also remove the user from the friend's friend list
     const friend = await User.findById(friendId);
     if (friend) {
       friend.friends = friend.friends.filter(friend => friend.toString() !== req.user.id);
@@ -464,8 +460,6 @@ app.post('/api/events', authenticateToken, async (req, res) => {
       inviteStatus: friends.map(friendId => ({ userId: friendId, status: 'Pending', _id: new mongoose.Types.ObjectId() }))
     });
     await newEvent.save();
-
-    // Notify friends about the event
     await Promise.all(friends.map(async (friendId) => {
       const user = await User.findById(friendId);
       if (user) {
@@ -546,8 +540,6 @@ app.post('/api/events/:eventId/accept', authenticateToken, async (req, res) => {
     event.attendees.push(req.user.id);
     event.invitedFriends = event.invitedFriends.filter(friendId => friendId && friendId.toString() !== req.user.id);
     await event.save();
-
-    // Remove the specific notification related to this event
     const user = await User.findById(req.user.id);
     user.notifications = user.notifications.filter(notification => notification.eventId.toString() !== eventId);
     await user.save();
@@ -571,8 +563,6 @@ app.post('/api/events/:eventId/reject', authenticateToken, async (req, res) => {
     invite.status = 'Rejected';
     event.invitedFriends = event.invitedFriends.filter(friendId => friendId && friendId.toString() !== req.user.id);
     await event.save();
-
-    // Remove the specific notification related to this event
     const user = await User.findById(req.user.id);
     user.notifications = user.notifications.filter(notification => notification.eventId.toString() !== eventId);
     await user.save();
@@ -601,15 +591,23 @@ app.get('/api/events/invites', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-
 app.get('/api/events', authenticateToken, async (req, res) => {
   try {
-    const events = await Event.find({
-      $or: [
-        { createdBy: req.user.id },
-        { attendees: req.user.id }
-      ]
-    }).populate('createdBy', 'fullName').populate('attendees', 'fullName'); // Populating createdBy and attendees with full name
+    const { filter } = req.query;
+    let events;
+
+    if (filter === 'created') {
+      events = await Event.find({ createdBy: req.user.id }).populate('createdBy', 'fullName').populate('attendees', 'fullName');
+    } else if (filter === 'attendee') {
+      events = await Event.find({ attendees: req.user.id }).populate('createdBy', 'fullName').populate('attendees', 'fullName');
+    } else {
+      events = await Event.find({
+        $or: [
+          { createdBy: req.user.id },
+          { attendees: req.user.id }
+        ]
+      }).populate('createdBy', 'fullName').populate('attendees', 'fullName');
+    }
 
     res.status(200).json(events);
   } catch (error) {
@@ -617,6 +615,7 @@ app.get('/api/events', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
 
 app.post('/api/notifications', authenticateToken, async (req, res) => {
   const { userId, message } = req.body;
@@ -652,13 +651,9 @@ app.delete('/api/events/:eventId', authenticateToken, async (req, res) => {
     if (!event) {
       return res.status(404).json({ message: 'Event not found' });
     }
-
-    // Check if the user is the creator of the event
     if (event.createdBy.toString() !== req.user.id) {
       return res.status(403).json({ message: 'You are not authorized to delete this event' });
     }
-
-    // Remove the event from the database
     await event.remove();
     res.status(200).json({ message: 'Event deleted successfully' });
   } catch (err) {
@@ -675,15 +670,11 @@ app.post('/api/events/:eventId/remove-attendee', authenticateToken, async (req, 
     if (!event) {
       return res.status(404).json({ message: 'Event not found' });
     }
-
-    // Check if the user is an attendee of the event
     if (event.attendees.includes(req.user.id)) {
       event.attendees = event.attendees.filter(attendee => attendee.toString() !== req.user.id);
       await event.save();
       return res.status(200).json({ message: 'You have been removed from the event', event });
     }
-
-    // If user is the creator, handle event deletion separately
     if (event.createdBy.toString() === req.user.id) {
       return res.status(403).json({ message: 'Use a different endpoint to delete the event' });
     }
@@ -695,8 +686,6 @@ app.post('/api/events/:eventId/remove-attendee', authenticateToken, async (req, 
   }
 });
 
-
-// Add connections routes
 const connectionsRoutes = require('../connections');
 app.use('/api', connectionsRoutes);
 
