@@ -10,6 +10,7 @@ const Project = require('./Project');
 const Discussion = require('./Discussion');
 const Comment = require('./Comment');
 const Event = require('./Event');
+const moment = require('moment-timezone');
 require('dotenv').config();
 
 const app = express();
@@ -454,8 +455,8 @@ app.post('/api/events', authenticateToken, async (req, res) => {
     const newEvent = new Event({
       title,
       location,
-      start: new Date(start),
-      end: new Date(end),
+      start: moment.tz(start, 'YYYY-MM-DDTHH:mm:ss', req.body.timezone).toDate(), 
+      end: moment.tz(end, 'YYYY-MM-DDTHH:mm:ss', req.body.timezone).toDate(), 
       createdBy: req.user.id,
       invitedFriends: friends,
       inviteStatus: friends.map(friendId => ({ userId: friendId, status: 'Pending', _id: new mongoose.Types.ObjectId() }))

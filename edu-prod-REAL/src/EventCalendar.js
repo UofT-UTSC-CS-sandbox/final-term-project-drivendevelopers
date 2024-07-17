@@ -1,8 +1,8 @@
-// src/EventCalendar.js
 import React, { useState, useEffect } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import moment from 'moment-timezone';  
 
 const EventCalendar = () => {
   const [events, setEvents] = useState([]);
@@ -85,8 +85,8 @@ const EventCalendar = () => {
       setEvents(data.map(event => ({
         id: event._id,
         title: event.title,
-        start: new Date(event.start),
-        end: new Date(event.end),
+        start: moment(event.start).toDate(), // Convert to local time
+        end: moment(event.end).toDate(), // Convert to local time
         createdBy: event.createdBy,
         location: event.location,
         attendees: event.attendees,
@@ -127,6 +127,7 @@ const EventCalendar = () => {
     e.preventDefault();
     const token = localStorage.getItem('token');
     try {
+      const timezone = moment.tz.guess(); // Get the local timezone
       const response = await fetch('http://localhost:5000/api/events', {
         method: 'POST',
         headers: {
@@ -136,8 +137,9 @@ const EventCalendar = () => {
         body: JSON.stringify({
           title: eventTitle,
           location: eventLocation,
-          start: `${startDate}T${startTime}:00Z`,
-          end: `${endDate}T${endTime}:00Z`,
+          start: `${startDate}T${startTime}:00`,
+          end: `${endDate}T${endTime}:00`,
+          timezone,  // Send the local timezone
           friends: invitedFriends,
         }),
       });
@@ -150,8 +152,8 @@ const EventCalendar = () => {
       setEvents([...events, {
         id: newEvent._id,
         title: newEvent.title,
-        start: new Date(newEvent.start),
-        end: new Date(newEvent.end),
+        start: moment(newEvent.start).toDate(), // Convert to local time
+        end: moment(newEvent.end).toDate(), // Convert to local time
         createdBy: newEvent.createdBy,
         location: newEvent.location,
         attendees: newEvent.attendees,
