@@ -1,3 +1,4 @@
+// src/EventCalendar.js
 import React, { useState, useEffect } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -11,8 +12,10 @@ const EventCalendar = () => {
   const [eventLocation, setEventLocation] = useState('');
   const [friends, setFriends] = useState([]);
   const [invitedFriends, setInvitedFriends] = useState([]);
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
+  const [startDate, setStartDate] = useState('');
+  const [startTime, setStartTime] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [endTime, setEndTime] = useState('');
   const [currentMonthYear, setCurrentMonthYear] = useState('');
   const [eventInvites, setEventInvites] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
@@ -82,8 +85,8 @@ const EventCalendar = () => {
       setEvents(data.map(event => ({
         id: event._id,
         title: event.title,
-        start: event.start,
-        end: event.end,
+        start: new Date(event.start),
+        end: new Date(event.end),
         createdBy: event.createdBy,
         location: event.location,
         attendees: event.attendees,
@@ -115,8 +118,8 @@ const EventCalendar = () => {
 
   const handleSelect = (info) => {
     setSelectedEvent(null);
-    setStartDate(info.startStr);
-    setEndDate(info.endStr);
+    setStartDate(info.startStr.split('T')[0]);
+    setEndDate(info.endStr.split('T')[0]);
     setModalOpen(true);
   };
 
@@ -133,8 +136,8 @@ const EventCalendar = () => {
         body: JSON.stringify({
           title: eventTitle,
           location: eventLocation,
-          start: startDate,
-          end: endDate,
+          start: `${startDate}T${startTime}:00Z`,
+          end: `${endDate}T${endTime}:00Z`,
           friends: invitedFriends,
         }),
       });
@@ -147,8 +150,8 @@ const EventCalendar = () => {
       setEvents([...events, {
         id: newEvent._id,
         title: newEvent.title,
-        start: newEvent.start,
-        end: newEvent.end,
+        start: new Date(newEvent.start),
+        end: new Date(newEvent.end),
         createdBy: newEvent.createdBy,
         location: newEvent.location,
         attendees: newEvent.attendees,
@@ -164,8 +167,10 @@ const EventCalendar = () => {
     setEventTitle('');
     setEventLocation('');
     setInvitedFriends([]);
-    setStartDate(null);
-    setEndDate(null);
+    setStartDate('');
+    setStartTime('');
+    setEndDate('');
+    setEndTime('');
   };
 
   const handleCancel = () => {
@@ -228,7 +233,7 @@ const EventCalendar = () => {
         throw new Error('Failed to remove attendee');
       }
 
-      fetchEvents(); 
+      fetchEvents();
       setModalOpen(false);
     } catch (error) {
       console.error('Error removing attendee:', error);
@@ -249,8 +254,8 @@ const EventCalendar = () => {
         throw new Error('Failed to accept invite');
       }
 
-      fetchEvents(); 
-      fetchEventInvites(); 
+      fetchEvents();
+      fetchEventInvites();
     } catch (error) {
       console.error('Error accepting invite:', error);
     }
@@ -270,8 +275,8 @@ const EventCalendar = () => {
         throw new Error('Failed to reject invite');
       }
 
-      fetchEvents(); 
-      fetchEventInvites(); 
+      fetchEvents();
+      fetchEventInvites();
     } catch (error) {
       console.error('Error rejecting invite:', error);
     }
@@ -351,6 +356,38 @@ const EventCalendar = () => {
                     placeholder="Event Location"
                     value={eventLocation}
                     onChange={(e) => setEventLocation(e.target.value)}
+                    style={{ marginBottom: '10px' }}
+                    required
+                  />
+                  <input
+                    type="date"
+                    placeholder="Start Date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    style={{ marginBottom: '10px' }}
+                    required
+                  />
+                  <input
+                    type="time"
+                    placeholder="Start Time"
+                    value={startTime}
+                    onChange={(e) => setStartTime(e.target.value)}
+                    style={{ marginBottom: '10px' }}
+                    required
+                  />
+                  <input
+                    type="date"
+                    placeholder="End Date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    style={{ marginBottom: '10px' }}
+                    required
+                  />
+                  <input
+                    type="time"
+                    placeholder="End Time"
+                    value={endTime}
+                    onChange={(e) => setEndTime(e.target.value)}
                     style={{ marginBottom: '10px' }}
                     required
                   />

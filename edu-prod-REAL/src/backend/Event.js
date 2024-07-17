@@ -8,8 +8,8 @@ const inviteStatusSchema = new mongoose.Schema({
 const eventSchema = new mongoose.Schema({
   title: String,
   location: String,
-  start: Date,
-  end: Date,
+  start: { type: Date, required: true },
+  end: { type: Date, required: true },
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   invitedFriends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   inviteStatus: [inviteStatusSchema],

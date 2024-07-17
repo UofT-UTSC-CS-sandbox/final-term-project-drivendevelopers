@@ -447,14 +447,15 @@ app.get('/api/discussions/:discussionId/comments', async (req, res) => {
   }
 });
 
+
 app.post('/api/events', authenticateToken, async (req, res) => {
   try {
     const { title, location, start, end, friends } = req.body;
     const newEvent = new Event({
       title,
       location,
-      start,
-      end,
+      start: new Date(start),
+      end: new Date(end),
       createdBy: req.user.id,
       invitedFriends: friends,
       inviteStatus: friends.map(friendId => ({ userId: friendId, status: 'Pending', _id: new mongoose.Types.ObjectId() }))
@@ -479,6 +480,9 @@ app.post('/api/events', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+
+
 
 app.post('/api/events/:eventId/accept/:inviteId', authenticateToken, async (req, res) => {
   try {
