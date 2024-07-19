@@ -1,7 +1,9 @@
+// src/connections.js
+
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const User = require('../User'); // Ensure the path is correct
+const User = require('./backend/User'); // Ensure the path is correct
 
 // Middleware to verify token and get user ID
 const verifyToken = (req, res, next) => {
@@ -10,7 +12,7 @@ const verifyToken = (req, res, next) => {
     return res.status(401).json({ message: 'No token provided' });
   }
 
-  jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key', (err, decoded) => {
+  jwt.verify(token, 'your-secret-key', (err, decoded) => {
     if (err) {
       return res.status(401).json({ message: 'Failed to authenticate token' });
     }
@@ -31,7 +33,7 @@ router.get('/recommended-connections', verifyToken, async (req, res) => {
 
     const recommendedConnections = await User.find({
       _id: { $ne: userId },
-      interests: { $in: user.interests }
+      interests: { $in: user.interests },
     });
 
     res.json(recommendedConnections);
