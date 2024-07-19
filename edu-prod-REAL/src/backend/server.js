@@ -47,6 +47,12 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+/**
+ * @route POST /api/gpa
+ * @description Save GPA calculation
+ * @access Private
+ */
+
 app.post('/api/gpa', authenticateToken, async (req, res) => {
   const { courses, gpa, type } = req.body;
 
@@ -63,6 +69,12 @@ app.post('/api/gpa', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+/**
+ * @route GET /api/gpa
+ * @description Fetch saved GPAs
+ * @access Private
+ */
+
 app.get('/api/gpa', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -74,7 +86,11 @@ app.get('/api/gpa', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-
+/**
+ * @route DELETE /api/gpa/:id
+ * @description Delete a saved GPA
+ * @access Private
+ */
 app.delete('/api/gpa/:id', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -90,7 +106,11 @@ app.delete('/api/gpa/:id', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-
+/**
+ * @route POST /register
+ * @description Register a new user
+ * @access Public
+ */
 app.post('/register', async (req, res) => {
   const { email, password, confirmPassword } = req.body;
 
@@ -112,7 +132,11 @@ app.post('/register', async (req, res) => {
     res.status(400).json({ message: 'Error registering user' });
   }
 });
-
+/**
+ * @route POST /login
+ * @description Login a user and return a token
+ * @access Public
+ */
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
@@ -130,6 +154,12 @@ app.post('/login', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+/**
+ * @route POST /api/projects
+ * @description Add a new project
+ * @access Private
+ */
 
 app.post('/api/projects', authenticateToken, async (req, res) => {
   const { projectName, description, link } = req.body;
@@ -150,6 +180,12 @@ app.post('/api/projects', authenticateToken, async (req, res) => {
   }
 });
 
+/**
+ * @route GET /api/projects
+ * @description Get all projects of the authenticated user
+ * @access Private
+ */
+
 app.get('/api/projects', authenticateToken, async (req, res) => {
   try {
     const projects = await Project.find({ user: req.user.id });
@@ -159,7 +195,11 @@ app.get('/api/projects', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Error fetching projects' });
   }
 });
-
+/**
+ * @route DELETE /api/projects/:projectId
+ * @description Delete a project by ID
+ * @access Private
+ */
 app.delete('/api/projects/:projectId', authenticateToken, async (req, res) => {
   try {
     const project = await Project.findOneAndDelete({ _id: req.params.projectId, user: req.user.id });
@@ -174,7 +214,11 @@ app.delete('/api/projects/:projectId', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-
+/**
+ * @route PUT /api/profile
+ * @description Update the user profile
+ * @access Private
+ */
 app.put('/api/profile', authenticateToken, upload.single('profilePicture'), async (req, res) => {
   const { fullName, programName, yearOfStudy, gpa, description, interests, courses } = req.body;
 
@@ -201,7 +245,11 @@ app.put('/api/profile', authenticateToken, upload.single('profilePicture'), asyn
     res.status(500).json({ message: 'Error updating profile' });
   }
 });
-
+/**
+ * @route GET /api/profile
+ * @description Get the profile of the authenticated user
+ * @access Private
+ */
 app.get('/api/profile', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -225,7 +273,11 @@ app.get('/api/profile', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Error fetching profile' });
   }
 });
-
+/**
+ * @route GET /api/profile/:id
+ * @description Get the profile of a user by ID
+ * @access Private
+ */
 app.get('/api/profile/:id', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -249,7 +301,11 @@ app.get('/api/profile/:id', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-
+/**
+ * @route POST /api/search-users
+ * @description Search users by different criteria
+ * @access Private
+ */
 app.post('/api/search-users', authenticateToken, async (req, res) => {
   const { name, academicInterests, courses, program, year } = req.body;
   const query = {};
@@ -268,6 +324,12 @@ app.post('/api/search-users', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Error searching users' });
   }
 });
+
+/**
+ * @route POST /api/friend-request
+ * @description Send a friend request to another user
+ * @access Private
+ */
 
 app.post('/api/friend-request', authenticateToken, async (req, res) => {
   const { userId } = req.body;
@@ -293,7 +355,11 @@ app.post('/api/friend-request', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-
+/**
+ * @route GET /api/friend-requests
+ * @description Get all friend requests for the authenticated user
+ * @access Private
+ */
 app.get('/api/friend-requests', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).populate('friendRequests', 'fullName');
@@ -303,7 +369,11 @@ app.get('/api/friend-requests', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-
+/**
+ * @route DELETE /api/friend-request/:id
+ * @description Delete a friend request by ID
+ * @access Private
+ */
 app.delete('/api/friend-request/:id', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -317,6 +387,11 @@ app.delete('/api/friend-request/:id', authenticateToken, async (req, res) => {
   }
 });
 
+/**
+ * @route POST /api/friend-request/accept/:id
+ * @description Accept a friend request
+ * @access Private
+ */
 app.post('/api/friend-request/accept/:id', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -340,7 +415,11 @@ app.post('/api/friend-request/accept/:id', authenticateToken, async (req, res) =
     res.status(500).json({ message: 'Server error' });
   }
 });
-
+/**
+ * @route GET /api/friends
+ * @description Get all friends of the authenticated user
+ * @access Private
+ */
 app.get('/api/friends', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).populate('friends', 'fullName profilePicture');
@@ -350,7 +429,11 @@ app.get('/api/friends', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-
+/**
+ * @route DELETE /api/friends/:id
+ * @description Remove a friend by ID
+ * @access Private
+ */
 app.delete('/api/friends/:id', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -369,7 +452,11 @@ app.delete('/api/friends/:id', authenticateToken, async (req, res) => {
     res.status500json({ message: 'Server error' });
   }
 });
-
+/**
+ * @route POST /api/discussions
+ * @description Create a new discussion
+ * @access Private
+ */
 app.post('/api/discussions', authenticateToken, upload.array('images'), async (req, res) => {
   try {
     const { title, description } = req.body;
@@ -392,7 +479,11 @@ app.post('/api/discussions', authenticateToken, upload.array('images'), async (r
     res.status(500).json({ message: 'Failed to create discussion', error });
   }
 });
-
+/**
+ * @route GET /api/discussions
+ * @description Get all discussions
+ * @access Private
+ */
 app.get('/api/discussions', authenticateToken, async (req, res) => {
   try {
     const discussions = await Discussion.find().populate('userId', 'email');
@@ -402,7 +493,11 @@ app.get('/api/discussions', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch discussions', error });
   }
 });
-
+/**
+ * @route GET /api/discussions/:id
+ * @description Get a discussion by ID
+ * @access Private
+ */
 app.get('/api/discussions/:id', authenticateToken, async (req, res) => {
   try {
     const discussion = await Discussion.findById(req.params.id).populate('userId', 'email');
@@ -415,7 +510,11 @@ app.get('/api/discussions/:id', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-
+/**
+ * @route POST /api/discussions/:discussionId/comments
+ * @description Add a comment to a discussion
+ * @access Private
+ */
 app.post('/api/discussions/:discussionId/comments', authenticateToken, async (req, res) => {
   const { content } = req.body;
 
@@ -435,7 +534,11 @@ app.post('/api/discussions/:discussionId/comments', authenticateToken, async (re
     res.status(500).json({ message: 'Error adding comment' });
   }
 });
-
+/**
+ * @route GET /api/discussions/:discussionId/comments
+ * @description Get all comments for a discussion
+ * @access Private
+ */
 app.get('/api/discussions/:discussionId/comments', async (req, res) => {
   try {
     const comments = await Comment.find({ discussionId: req.params.discussionId })
@@ -448,15 +551,19 @@ app.get('/api/discussions/:discussionId/comments', async (req, res) => {
   }
 });
 
-
+/**
+ * @route POST /api/events
+ * @description Create a new event
+ * @access Private
+ */
 app.post('/api/events', authenticateToken, async (req, res) => {
   try {
-    const { title, location, start, end, friends } = req.body;
+    const { title, location, start, end, friends, timezone } = req.body;
     const newEvent = new Event({
       title,
       location,
-      start: moment.tz(start, 'YYYY-MM-DDTHH:mm:ss', req.body.timezone).toDate(), 
-      end: moment.tz(end, 'YYYY-MM-DDTHH:mm:ss', req.body.timezone).toDate(), 
+      start: moment.tz(start, timezone).utc().toDate(), // Convert to UTC
+      end: moment.tz(end, timezone).utc().toDate(), // Convert to UTC
       createdBy: req.user.id,
       invitedFriends: friends,
       inviteStatus: friends.map(friendId => ({ userId: friendId, status: 'Pending', _id: new mongoose.Types.ObjectId() }))
@@ -481,7 +588,11 @@ app.post('/api/events', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-
+/**
+ * @route POST /api/events/:eventId/accept/:inviteId
+ * @description Accept an event invite
+ * @access Private
+ */
 
 
 
@@ -508,7 +619,11 @@ app.post('/api/events/:eventId/accept/:inviteId', authenticateToken, async (req,
     res.status(500).json({ message: 'Server error' });
   }
 });
-
+/**
+ * @route POST /api/events/:eventId/reject/:inviteId
+ * @description Reject an event invite
+ * @access Private
+ */
 app.post('/api/events/:eventId/reject/:inviteId', authenticateToken, async (req, res) => {
   try {
     const { eventId, inviteId } = req.params;
@@ -531,7 +646,11 @@ app.post('/api/events/:eventId/reject/:inviteId', authenticateToken, async (req,
     res.status(500).json({ message: 'Server error' });
   }
 });
-
+/**
+ * @route POST /api/events/:eventId/accept
+ * @description Accept an event invite without invite ID
+ * @access Private
+ */
 app.post('/api/events/:eventId/accept', authenticateToken, async (req, res) => {
   try {
     const { eventId } = req.params;
@@ -555,7 +674,11 @@ app.post('/api/events/:eventId/accept', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-
+/**
+ * @route POST /api/events/:eventId/reject
+ * @description Reject an event invite without invite ID
+ * @access Private
+ */
 app.post('/api/events/:eventId/reject', authenticateToken, async (req, res) => {
   try {
     const { eventId } = req.params;
@@ -578,7 +701,11 @@ app.post('/api/events/:eventId/reject', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-
+/**
+ * @route GET /api/events/invites
+ * @description Get all event invites for the authenticated user
+ * @access Private
+ */
 app.get('/api/events/invites', authenticateToken, async (req, res) => {
   try {
     const events = await Event.find({ 'inviteStatus.userId': req.user.id })
@@ -596,6 +723,12 @@ app.get('/api/events/invites', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+/**
+ * @route GET /api/events
+ * @description Get all events based on filter
+ * @access Private
+ */
 app.get('/api/events', authenticateToken, async (req, res) => {
   try {
     const { filter } = req.query;
@@ -621,7 +754,11 @@ app.get('/api/events', authenticateToken, async (req, res) => {
   }
 });
 
-
+/**
+ * @route POST /api/notifications
+ * @description Send a notification to a user
+ * @access Private
+ */
 app.post('/api/notifications', authenticateToken, async (req, res) => {
   const { userId, message } = req.body;
   try {
@@ -635,7 +772,11 @@ app.post('/api/notifications', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-
+/**
+ * @route GET /api/notifications
+ * @description Get all notifications for the authenticated user
+ * @access Private
+ */
 app.get('/api/notifications', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -647,7 +788,11 @@ app.get('/api/notifications', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-
+/**
+ * @route DELETE /api/events/:eventId
+ * @description Delete an event by ID
+ * @access Private
+ */
 app.delete('/api/events/:eventId', authenticateToken, async (req, res) => {
   try {
     const { eventId } = req.params;
@@ -666,7 +811,11 @@ app.delete('/api/events/:eventId', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-
+/**
+ * @route POST /api/events/:eventId/remove-attendee
+ * @description Remove an attendee from an event
+ * @access Private
+ */
 app.post('/api/events/:eventId/remove-attendee', authenticateToken, async (req, res) => {
   try {
     const { eventId } = req.params;

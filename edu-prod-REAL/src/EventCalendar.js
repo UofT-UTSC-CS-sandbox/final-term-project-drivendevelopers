@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import moment from 'moment-timezone';  
+import moment from 'moment-timezone';
 
 const EventCalendar = () => {
   const [events, setEvents] = useState([]);
@@ -21,12 +21,21 @@ const EventCalendar = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [filter, setFilter] = useState('');
 
+  const monthNames = [
+    'January', 'February', 'March', 'April', 'May', 'June', 
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+
   useEffect(() => {
     fetchCurrentUser();
     fetchFriends();
     fetchEvents();
     fetchEventInvites();
   }, [filter]);
+
+  useEffect(() => {
+    updateCurrentMonthYear(new Date());
+  }, []);
 
   const fetchCurrentUser = async () => {
     const token = localStorage.getItem('token');
@@ -85,8 +94,8 @@ const EventCalendar = () => {
       setEvents(data.map(event => ({
         id: event._id,
         title: event.title,
-        start: moment(event.start).toDate(), // Convert to local time
-        end: moment(event.end).toDate(), // Convert to local time
+        start: moment.utc(event.start).local().toDate(),
+        end: moment.utc(event.end).local().toDate(), 
         createdBy: event.createdBy,
         location: event.location,
         attendees: event.attendees,
@@ -118,8 +127,11 @@ const EventCalendar = () => {
 
   const handleSelect = (info) => {
     setSelectedEvent(null);
-    setStartDate(info.startStr.split('T')[0]);
-    setEndDate(info.endStr.split('T')[0]);
+    const selectedStartDate = moment(info.startStr).format('YYYY-MM-DD');
+    const selectedEndDate = moment(info.endStr).subtract(1, 'days').format('YYYY-MM-DD');
+    setStartDate(selectedStartDate);
+    setEndDate(selectedEndDate);
+    updateCurrentMonthYear(selectedStartDate);
     setModalOpen(true);
   };
 
@@ -127,7 +139,9 @@ const EventCalendar = () => {
     e.preventDefault();
     const token = localStorage.getItem('token');
     try {
-      const timezone = moment.tz.guess(); // Get the local timezone
+      const timezone = moment.tz.guess(); 
+      const start = moment.tz(`${startDate}T${startTime}`, timezone).utc().format();
+      const end = moment.tz(`${endDate}T${endTime}`, timezone).utc().format();
       const response = await fetch('http://localhost:5000/api/events', {
         method: 'POST',
         headers: {
@@ -137,9 +151,9 @@ const EventCalendar = () => {
         body: JSON.stringify({
           title: eventTitle,
           location: eventLocation,
-          start: `${startDate}T${startTime}:00`,
-          end: `${endDate}T${endTime}:00`,
-          timezone,  // Send the local timezone
+          start,
+          end,
+          timezone,  
           friends: invitedFriends,
         }),
       });
@@ -152,8 +166,8 @@ const EventCalendar = () => {
       setEvents([...events, {
         id: newEvent._id,
         title: newEvent.title,
-        start: moment(newEvent.start).toDate(), // Convert to local time
-        end: moment(newEvent.end).toDate(), // Convert to local time
+        start: moment.utc(newEvent.start).local().toDate(), 
+        end: moment.utc(newEvent.end).local().toDate(), 
         createdBy: newEvent.createdBy,
         location: newEvent.location,
         attendees: newEvent.attendees,
@@ -180,23 +194,20 @@ const EventCalendar = () => {
     resetForm();
   };
 
-  const handleInviteFriend = (friendId) => {
-    setInvitedFriends((prev) =>
-      prev.includes(friendId) ? prev.filter((id) => id !== friendId) : [...prev, friendId]
-    );
+  const handleInviteFriend = (event) => {
+    const selectedOptions = Array.from(event.target.selectedOptions, option => option.value);
+    setInvitedFriends(selectedOptions);
   };
 
   const handleDatesSet = (dateInfo) => {
-    const month = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(dateInfo.start);
-    const year = dateInfo.start.getFullYear();
-    setCurrentMonthYear(`${month} ${year}`);
+    updateCurrentMonthYear(dateInfo.start);
   };
 
   const handleEventClick = (info) => {
     const event = events.find(e => e.id === info.event.id);
     setSelectedEvent(event);
-    setStartDate(null);
-    setEndDate(null);
+    setStartDate('');
+    setEndDate('');
     setModalOpen(true);
   };
 
@@ -284,6 +295,13 @@ const EventCalendar = () => {
     }
   };
 
+  const updateCurrentMonthYear = (date) => {
+    const monthIndex = moment(date).month();
+    const year = moment(date).year();
+    const monthName = monthNames[monthIndex];
+    setCurrentMonthYear(`${monthName} ${year}`);
+  };
+
   return (
     <div>
       <div style={{ textAlign: 'center', margin: '20px 0' }}>
@@ -308,10 +326,12 @@ const EventCalendar = () => {
         select={handleSelect}
         datesSet={handleDatesSet}
         eventClick={handleEventClick}
+        showNonCurrentDates={false}
         headerToolbar={{
           start: 'today prev,next',
           end: 'dayGridMonth,dayGridWeek,dayGridDay',
         }}
+        initialDate={new Date()} 
       />
 
       {modalOpen && (
@@ -395,7 +415,7 @@ const EventCalendar = () => {
                   />
                   <div>
                     <label>Invite Friends:</label>
-                    <select multiple value={invitedFriends} onChange={(e) => handleInviteFriend(e.target.value)}>
+                    <select multiple value={invitedFriends} onChange={handleInviteFriend}>
                       {friends.map((friend) => (
                         <option key={friend._id} value={friend._id}>
                           {friend.fullName}
