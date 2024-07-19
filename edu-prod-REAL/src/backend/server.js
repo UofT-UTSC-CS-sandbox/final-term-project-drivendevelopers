@@ -8,16 +8,14 @@ const path = require('path');
 const User = require('./User');
 const Project = require('./Project');
 require('dotenv').config();
-const uploadFolder = process.env.UPLOADS_DIR
-
 const app = express();
 app.use(express.json());
 app.use(cors());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = 'mongodb+srv://c01Project:EduProd1@cluster0.ieebveo.mongodb.net/edu-prod?retryWrites=true&w=majority';
 
-// Connect to MongoDB
 mongoose.connect(MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -25,7 +23,6 @@ mongoose.connect(MONGO_URI, {
 .then(() => console.log('MongoDB connected'))
 .catch(err => console.error('MongoDB connection error:', err));
 
-// Middleware to authenticate JWT token
 const authenticateToken = (req, res, next) => {
   const token = req.headers['authorization'] && req.headers['authorization'].split(' ')[1];
   if (!token) return res.sendStatus(401);
@@ -37,26 +34,17 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-// Setting up Multer for profile picture upload
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadFolder);
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/');
   },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`
-    console.log(file.filename);
-    cb(null, `${uniqueSuffix}-${file.filename}`);
+  filename: function (req, file, cb) {
+    cb(null, `${Date.now()}-${file.originalname}`);
   }
 });
 
-const upload = multer({ storage });
+const upload = multer({ storage: storage });
 
-console.log(uploadFolder);
-console.log(path.join(__dirname, '../../uploads'));
-// Serve static files from uploads folder
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
-
-// Register endpoint
 app.post('/register', async (req, res) => {
   const { email, password, confirmPassword } = req.body;
 
@@ -69,7 +57,7 @@ app.post('/register', async (req, res) => {
   }
 
   try {
-    const hashedPassword = await bcrypt.hash(password, 12); // Increase rounds as needed
+    const hashedPassword = await bcrypt.hash(password, 12);
     const newUser = new User({ email, password: hashedPassword });
     await newUser.save();
     res.status(201).json({ message: 'User registered successfully' });
@@ -79,7 +67,6 @@ app.post('/register', async (req, res) => {
   }
 });
 
-// Login endpoint
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
@@ -98,12 +85,10 @@ app.post('/login', async (req, res) => {
   }
 });
 
-// Save project endpoint
 app.post('/api/projects', authenticateToken, async (req, res) => {
-  const { projectName, description, link, } = req.body;
+  const { projectName, description, link } = req.body;
 
   try {
-    // Create a new project associated with the authenticated user
     const newProject = new Project({
       projectName,
       description,
@@ -119,7 +104,6 @@ app.post('/api/projects', authenticateToken, async (req, res) => {
   }
 });
 
-// Get all projects for user
 app.get('/api/projects', authenticateToken, async (req, res) => {
   try {
     const projects = await Project.find({ user: req.user.id });
@@ -130,7 +114,6 @@ app.get('/api/projects', authenticateToken, async (req, res) => {
   }
 });
 
-// Delete project endpoint
 app.delete('/api/projects/:projectId', authenticateToken, async (req, res) => {
   try {
     const project = await Project.findOneAndDelete({ _id: req.params.projectId, user: req.user.id });
@@ -146,20 +129,20 @@ app.delete('/api/projects/:projectId', authenticateToken, async (req, res) => {
   }
 });
 
-// Update user profile endpoint
 app.put('/api/profile', authenticateToken, upload.single('profilePicture'), async (req, res) => {
-  const { fullName, programName, yearOfStudy, gpa, description } = req.body;
+  const { fullName, programName, yearOfStudy, gpa, description, interests, courses } = req.body;
 
   try {
     const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ message: 'User not found' });
 
-    // Update user profile fields
     user.programName = programName;
     user.yearOfStudy = yearOfStudy;
     user.fullName = fullName;
     user.gpa = gpa;
     user.description = description;
+    user.interests = JSON.parse(interests);
+    user.courses = JSON.parse(courses);
 
     if (req.file) {
       user.profilePicture = `/uploads/${req.file.filename}`;
@@ -173,7 +156,6 @@ app.put('/api/profile', authenticateToken, upload.single('profilePicture'), asyn
   }
 });
 
-// Get user profile endpoint
 app.get('/api/profile', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -187,6 +169,8 @@ app.get('/api/profile', authenticateToken, async (req, res) => {
       yearOfStudy: user.yearOfStudy,
       description: user.description,
       profilePicture: user.profilePicture,
+      interests: user.interests,
+      courses: user.courses,
     };
 
     res.status(200).json(profileData);
@@ -195,5 +179,169 @@ app.get('/api/profile', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Error fetching profile' });
   }
 });
+
+app.post('/api/search-users', authenticateToken, async (req, res) => {
+  const { name, academicInterests, courses, program, year } = req.body;
+  const query = {};
+
+  if (name) query.fullName = { $regex: name, $options: 'i' };
+  if (academicInterests) query.interests = { $regex: academicInterests, $options: 'i' };
+  if (courses) query.courses = { $regex: courses, $options: 'i' };
+  if (program) query.programName = { $regex: program, $options: 'i' };
+  if (year) query.yearOfStudy = year;
+
+  try {
+    const users = await User.find(query).select('fullName interests courses programName yearOfStudy profilePicture');
+    res.json(users);
+  } catch (error) {
+    console.error('Error searching users:', error);
+    res.status(500).json({ message: 'Error searching users' });
+  }
+});
+// src/backend/server.js
+
+app.post('/api/friend-request', authenticateToken, async (req, res) => {
+  const { userId } = req.body;
+
+  try {
+    const user = await User.findById(req.user.id);
+    const recipient = await User.findById(userId);
+
+    if (!recipient) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (recipient.friendRequests.includes(user._id)) {
+      return res.status(400).json({ message: 'Friend request already sent' });
+    }
+
+    recipient.friendRequests.push(user._id);
+    await recipient.save();
+
+    res.status(200).json({ message: 'Friend request sent successfully' });
+  } catch (err) {
+    console.error('Error sending friend request:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+app.get('/api/friend-requests', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).populate('friendRequests', 'fullName');
+    res.status(200).json(user.friendRequests);
+  } catch (err) {
+    console.error('Error fetching friend requests:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+app.delete('/api/friend-request/:id', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    user.friendRequests = user.friendRequests.filter(requestId => requestId.toString() !== req.params.id);
+    await user.save();
+
+    res.status(200).json({ message: 'Friend request removed successfully' });
+  } catch (error) {
+    console.error('Error removing friend request:', error.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+app.post('/api/friend-request/accept/:id', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    const friend = await User.findById(req.params.id);
+
+    if (!friend) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    user.friends.push(friend._id);
+    friend.friends.push(user._id);
+
+    user.friendRequests = user.friendRequests.filter(requestId => requestId.toString() !== req.params.id);
+
+    await user.save();
+    await friend.save();
+
+    res.status(200).json({ message: 'Friend request accepted' });
+  } catch (err) {
+    console.error('Error accepting friend request:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+app.get('/api/friends', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).populate('friends', 'fullName profilePicture');
+    res.status(200).json(user.friends);
+  } catch (err) {
+    console.error('Error fetching friends:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+app.get('/api/connections', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const recommendations = await User.find({
+      interests: { $in: user.interests },
+      _id: { $ne: req.user.id }
+    });
+
+    res.status(200).json(recommendations);
+  } catch (err) {
+    console.error('Error fetching recommendations:', err.message);
+    res.status(500).json({ message: 'Error fetching recommendations' });
+  }
+});
+app.get('/api/profile/:id', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const profileData = {
+      email: user.email,
+      fullName: user.fullName,
+      gpa: user.gpa,
+      programName: user.programName,
+      yearOfStudy: user.yearOfStudy,
+      description: user.description,
+      profilePicture: user.profilePicture,
+      interests: user.interests,
+      courses: user.courses,
+    };
+
+    res.status(200).json(profileData);
+  } catch (err) {
+    console.error('Error fetching profile:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+app.delete('/api/friends/:id', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    const friendId = req.params.id;
+
+    // Remove friend from the user's friend list
+    user.friends = user.friends.filter(friend => friend.toString() !== friendId);
+    await user.save();
+
+    // Also remove the user from the friend's friend list
+    const friend = await User.findById(friendId);
+    if (friend) {
+      friend.friends = friend.friends.filter(friend => friend.toString() !== req.user.id);
+      await friend.save();
+    }
+
+    res.status(200).json({ message: 'Friend removed successfully' });
+  } catch (error) {
+    console.error('Error removing friend:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

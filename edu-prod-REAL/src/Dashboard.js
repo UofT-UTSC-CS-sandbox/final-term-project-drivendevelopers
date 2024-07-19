@@ -1,23 +1,156 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import FriendRequestsNotification from './FriendRequestsNotification'; // Import the new component
+import '@fortawesome/fontawesome-free/css/all.min.css';
+
+const styles = {
+  dashboardContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    minHeight: '100vh',
+    backgroundColor: '#f7f7f7',
+    color: '#000',
+    padding: '20px',
+    boxSizing: 'border-box',
+  },
+  header: {
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '20px',
+    fontSize: '2.5rem',
+    color: '#000',
+  },
+  navButtons: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '20px',
+    fontSize: '1.5rem',
+    color: '#000',
+  },
+  navButton: {
+    background: 'none',
+    border: 'none',
+    color: '#000',
+    cursor: 'pointer',
+    textDecoration: 'none',
+    fontSize: 'inherit',
+    padding: '0',
+  },
+  column: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    backgroundColor: '#e6e6e6',
+    padding: '20px',
+    borderRadius: '10px',
+    width: '30%',
+    margin: '10px',
+  },
+  mainTitle: {
+    fontSize: '3rem',
+    color: '#333',
+    marginBottom: '20px',
+  },
+  subTitle: {
+    fontSize: '2rem',
+    marginBottom: '20px',
+    color: '#555',
+  },
+  projectCard: {
+    backgroundColor: '#fff',
+    borderRadius: '10px',
+    padding: '15px',
+    marginBottom: '10px',
+    width: '100%',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+  },
+  projectTitle: {
+    fontSize: '1.5rem',
+    marginBottom: '10px',
+  },
+  projectDescription: {
+    fontSize: '1rem',
+    marginBottom: '10px',
+    color: '#777',
+  },
+  projectMembers: {
+    fontSize: '1rem',
+    color: '#777',
+  },
+  button: {
+    padding: '10px 20px',
+    borderRadius: '20px',
+    border: 'none',
+    backgroundColor: '#007bff',
+    color: '#fff',
+    cursor: 'pointer',
+    fontSize: '1rem',
+    fontWeight: 'bold',
+    marginBottom: '10px',
+  },
+  profilePicture: {
+    width: '75px',
+    height: '75px',
+    borderRadius: '50%',
+    marginRight: '10px',
+    objectFit: 'cover',
+    objectPosition: 'center',
+    display: 'inline-block',
+    verticalAlign: 'middle'
+  },
+};
 
 const Dashboard = () => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [profileData, setProfileData] = useState(null);
   const navigate = useNavigate();
+  const [projects, setProjects] = useState([]);
+  const [userName, setUserName] = useState('');
+  const [friendRequests, setFriendRequests] = useState([]);
+  const [recommendedConnections, setRecommendedConnections] = useState([]);
+  const [sentRequests, setSentRequests] = useState([]);
+
+  
+
 
   useEffect(() => {
-    // Fetch profile data when component mounts
     fetchProfileData();
+    fetchProjects();
+    fetchFriendRequests();
+    fetchRecommendedConnections();
+    
+    
   }, []);
+  
+  
+  const fetchRecommendedConnections = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5000/api/connections', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch recommended connections');
+      }
+      const data = await response.json();
+      setRecommendedConnections(data);
+    } catch (error) {
+      console.error('Error fetching recommended connections:', error);
+    }
+  };
+
 
   const fetchProfileData = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/profile', {
+      const response = await fetch('http://localhost:5000/api/profile', {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
@@ -27,65 +160,168 @@ const Dashboard = () => {
       }
 
       const data = await response.json();
-      setProfileData(data);
+      setUserName(data.fullName);
     } catch (error) {
       console.error('Error fetching profile:', error);
-      // Handle error (show error message, redirect, etc.)
     }
   };
 
-  const handleProfileView = () => {
-    navigate('/profile-view');
+  const fetchProjects = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5000/api/projects', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch projects');
+      }
+
+      const data = await response.json();
+      setProjects(data);
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+    }
   };
 
-  const handleConnect = () => {
-    // Handle connect button click
-    console.log('Connect button clicked');
+  const fetchFriendRequests = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5000/api/friend-requests', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch friend requests');
+      }
+
+      const data = await response.json();
+      setFriendRequests(data.map(request => request._id)); // Update the friendRequests state with user IDs
+    } catch (error) {
+      console.error('Error fetching friend requests:', error);
+    }
+  };
+  const handleSendFriendRequest = async (userId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:5000/api/friend-request`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send friend request');
+      }
+
+      console.log(`Friend request sent to user ID: ${userId}`);
+      // Update the state to reflect the friend request was sent
+      setSentRequests((prev) => [...prev, userId]);
+    } catch (error) {
+      console.error('Error sending friend request:', error);
+    }
   };
 
-  const handleProjects = () => {
-    navigate('/project-list');
+  const handleNavigation = (path) => {
+    navigate(path);
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/');
+    localStorage.removeItem('token'); // Clear token from localStorage
+    navigate('/'); // Redirect to login page after logout
   };
-
-  const toggleCollapse = () => {
-    setIsCollapsed(!isCollapsed);
-  };
-
   return (
-    <div style={{ display: 'flex', height: '100vh', backgroundColor: '#f0f2f5' }}>
-      {/* Side panel */}
-      <div style={{ width: isCollapsed ? '60px' : '250px', backgroundColor: '#000', color: '#fff', padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', transition: 'width 0.3s ease' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: '20px' }}>
-          <h2 style={{ margin: 0 }}>{isCollapsed ? '' : 'Dashboard'}</h2>
-          <button onClick={toggleCollapse} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#fff', fontSize: '1.5rem', marginBottom: '1rem' }}>
-            {isCollapsed ? '▶' : '◀'}
+    <div style={styles.dashboardContainer}>
+      <div style={styles.header}>
+        <div>Edu Prodigi</div>
+        <div style={styles.navButtons}>
+          <button style={styles.navButton} onClick={() => handleNavigation('/profile-view')}>Profile</button>
+          <button style={styles.navButton} onClick={() => handleNavigation('/connect')}>Connect</button>
+          <button style={styles.navButton} onClick={() => handleNavigation('/project-list')}>Projects</button>
+          <button style={styles.navButton} onClick={() => handleNavigation('/notifications')}>
+            <i className="fas fa-bell"></i>
+            {friendRequests.length > 0 && (
+              <span style={{ color: 'red', marginLeft: '5px' }}>
+                {friendRequests.length}
+              </span>
+            )}
+          </button>
+          <button style={styles.navButton} onClick={() => handleNavigation('/friend-list')}>Friends</button> {/* Add this line */}
+          <button style={styles.navButton} onClick={handleLogout}>
+            <i className="fas fa-sign-out-alt"></i> Logout
           </button>
         </div>
-        {!isCollapsed && (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-            <button onClick={handleProfileView} style={{ marginBottom: '1rem', padding: '10px 20px', borderRadius: '20px', border: 'none', backgroundColor: '#ff4d4f', color: '#fff', cursor: 'pointer', fontSize: '1.5rem', fontWeight: 'bold' }}>View Profile</button>
-            <button onClick={handleConnect} style={{ marginBottom: '1rem', padding: '10px 20px', borderRadius: '20px', border: 'none', backgroundColor: '#ff4d4f', color: '#fff', cursor: 'pointer', fontSize: '1.5rem', fontWeight: 'bold' }}>Connect</button>
-            <button onClick={handleProjects} style={{ marginBottom: '1rem', padding: '10px 20px', borderRadius: '20px', border: 'none', backgroundColor: '#ff4d4f', color: '#fff', cursor: 'pointer', fontSize: '1.5rem', fontWeight: 'bold' }}>Projects</button>
-            <button onClick={handleLogout} style={{ padding: '10px 20px', borderRadius: '20px', border: 'none', backgroundColor: '#ffd166', color: '#333', cursor: 'pointer', fontSize: '1.5rem', fontWeight: 'bold' }}>Logout</button>
-          </div>
-        )}
       </div>
-      {/* Main content */}
-      <div style={{ flex: 1, padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundImage: 'url("https://c4.wallpaperflare.com/wallpaper/839/50/541/library-cartoon-books-candles-wallpaper-preview.jpg")', backgroundSize: 'cover', backgroundPosition: 'center', color: '#333' }}>
-        <h1 style={{ fontFamily: 'Impact', fontSize: '5rem', textAlign: 'center', marginBottom: '2rem', color: '#FFFFFF' }}>Welcome to Edu Prodigi</h1>
-        {profileData && (
-          <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', padding: '20px', borderRadius: '10px', maxWidth: '400px' }}>
-            <h2 style={{ textAlign: 'center', marginBottom: '1rem' }}>Your Profile</h2>
-            <p><strong>Program Name:</strong> {profileData.programName}</p>
-            <p><strong>Year of Study:</strong> {profileData.yearOfStudy}</p>
-          </div>
-        )}
+      <h1 style={styles.mainTitle}>Hello, {userName || 'User'}!</h1>
+      <FriendRequestsNotification friendRequests={friendRequests} /> {/* Use the new component here */}
+      {friendRequests.length > 0 && (
+        <div style={{ marginBottom: '20px', color: 'red' }}>
+        </div>
+        // if friend request sent from recommended connections, then write you have sent a friend request
+      )}
+
+
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+        <div style={styles.column}>
+        <h2 style={styles.subTitle}>Recommended Connections</h2>
+          {recommendedConnections.length > 0 ? (
+            recommendedConnections.map((user) => (
+              <div key={user._id} style={styles.projectCard}>
+                {user.profilePicture && (
+                  <img
+                    src={`http://localhost:5000${user.profilePicture}`}
+                    alt="Profile"
+                    style={styles.profilePicture}
+                  />
+                )}
+                <h3 style={styles.projectTitle}>{user.fullName}</h3>
+                <p style={styles.projectDescription}>Interests: {user.interests.join(', ')}</p>
+                <button
+                  onClick={() => handleSendFriendRequest(user._id)}
+                  disabled={friendRequests.includes(user._id)}
+                  style={styles.button}
+                >
+                  {sentRequests.includes(user._id) ? 'Request Sent' : 'Add Friend'}
+                </button>
+                
+              </div>
+            ))
+          ) : (
+            <p>No recommendations found</p>
+          )}
+        </div>
+        <div style={styles.column}>
+          <h2 style={styles.subTitle}>Tools</h2>
+          <button style={styles.button} onClick={() => handleNavigation('/eventCalendar')}>Event Calendar</button>
+          <button style={styles.button} onClick={() => handleNavigation('/coursePlanner')}>Discussions</button>
+          <button style={styles.button} onClick={() => handleNavigation('/gpaCalc')}>GPA Calculator</button>
+        </div>
+        <div style={styles.column}>
+          <h2 style={styles.subTitle}>Current Projects</h2>
+          {projects.length > 0 ? (
+            projects.map((project) => (
+              <div key={project._id} style={styles.projectCard}>
+                <h3 style={styles.projectTitle}>{project.projectName}</h3>
+                <p style={styles.projectDescription}>{project.description}</p>
+                {/* <p style={styles.projectMembers}>Number of members: {project.members || 1}</p> */}
+              </div>
+            ))
+          ) : (
+            <p>No projects found</p>
+          )}
+        </div>
       </div>
     </div>
   );
