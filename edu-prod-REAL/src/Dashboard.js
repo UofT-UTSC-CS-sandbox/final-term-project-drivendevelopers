@@ -278,14 +278,14 @@ const Dashboard = () => {
               </span>
             )}
           </button>
-          <button style={styles.navButton} onClick={() => handleNavigation('/friend-list')}>Friends</button> 
+          <button style={styles.navButton} onClick={() => handleNavigation('/friend-list')}>Friends</button>
           <button style={styles.navButton} onClick={handleLogout}>
             <i className="fas fa-sign-out-alt"></i> Logout
           </button>
         </div>
       </div>
       <h1 style={styles.mainTitle}>Hello, {userName || 'User'}!</h1>
-      <FriendRequestsNotification friendRequests={friendRequests} /> 
+      <FriendRequestsNotification friendRequests={friendRequests} />
       {friendRequests.length > 0 && (
         <div style={{ marginBottom: '20px', color: 'red' }}>
         </div>
@@ -324,6 +324,7 @@ const Dashboard = () => {
           <button style={styles.button} onClick={() => handleNavigation('/discussions')}>Discussions</button>
           <button style={styles.button} onClick={() => handleNavigation('/gpa-calc')}>GPA Calculator</button>
           <button style={styles.button} onClick={() => handleNavigation('/resource-library')}>Resource Library</button>
+          <button style={styles.button} onClick={() => handleNavigation('/to-do')}>To Do List</button>
         </div>
         <div style={styles.column}>
           <h2 style={styles.subTitle}>Current Projects</h2>
