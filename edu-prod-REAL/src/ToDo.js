@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 const styles = {
   container: {
@@ -77,28 +77,55 @@ const styles = {
     borderRadius: '5px',
     border: '1px solid #ccc',
   },
+  filterSelect: {
+    width: '200px',
+    padding: '10px',
+    marginBottom: '20px',
+    borderRadius: '5px',
+    border: '1px solid #ccc',
+  },
+  sortSelect: {
+    width: '200px',
+    padding: '10px',
+    marginBottom: '20px',
+    borderRadius: '5px',
+    border: '1px solid #ccc',
+  },
+  deleteButton: {
+    padding: '5px 10px',
+    borderRadius: '5px',
+    border: 'none',
+    backgroundColor: '#dc3545',
+    color: '#fff',
+    cursor: 'pointer',
+    fontSize: '1rem',
+    fontWeight: 'bold',
+    marginLeft: '10px',
+  },
 };
 
 const ToDo = () => {
   const [todos, setTodos] = useState([]);
   const [title, setTitle] = useState('');
   const [priority, setPriority] = useState(1);
+  const [stateFilter, setStateFilter] = useState('');
+  const [sortOrder, setSortOrder] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
 
-  useEffect(() => {
-    fetchTodos();
-  }, []);
-
-  const fetchTodos = async () => {
+  const fetchTodos = useCallback(async () => {
     const token = localStorage.getItem('token');
-    const response = await fetch('http://localhost:5000/api/todos', {
+    const response = await fetch(`http://localhost:5000/api/todos${stateFilter ? `?state=${stateFilter}` : ''}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
     const data = await response.json();
     setTodos(data);
-  };
+  }, [stateFilter]);
+
+  useEffect(() => {
+    fetchTodos();
+  }, [fetchTodos]);
 
   const handleAddToDo = async () => {
     const token = localStorage.getItem('token');
@@ -131,14 +158,60 @@ const ToDo = () => {
     setTodos(todos.map(todo => (todo._id === id ? updatedToDo : todo)));
   };
 
+  const handleDeleteToDo = async (id) => {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`http://localhost:5000/api/todos/${id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (response.ok) {
+      setTodos(todos.filter(todo => todo._id !== id));
+    } else {
+      console.error('Failed to delete to-do item');
+    }
+  };
+
+  const sortedTodos = todos.slice().sort((a, b) => {
+    if (sortOrder === 'highest') {
+      return a.priority - b.priority;
+    }
+    if (sortOrder === 'lowest') {
+      return b.priority - a.priority;
+    }
+    return 0;
+  });
+
   return (
     <div style={styles.container}>
       <h1>To Do List</h1>
+      <select
+        style={styles.filterSelect}
+        value={stateFilter}
+        onChange={(e) => setStateFilter(e.target.value)}
+      >
+        <option value="">All</option>
+        <option value="Not Started">Not Started</option>
+        <option value="In Progress">In Progress</option>
+        <option value="Completed">Completed</option>
+        <option value="Blocked">Blocked</option>
+        <option value="Canceled">Canceled</option>
+      </select>
+      <select
+        style={styles.sortSelect}
+        value={sortOrder}
+        onChange={(e) => setSortOrder(e.target.value)}
+      >
+        <option value="">Sort by Priority</option>
+        <option value="highest">Highest to Lowest</option>
+        <option value="lowest">Lowest to Highest</option>
+      </select>
       <button style={styles.button} onClick={() => setModalOpen(true)}>Add To Do Item</button>
-      {todos.map(todo => (
+      {sortedTodos.map(todo => (
         <div key={todo._id} style={styles.todoItem}>
           <h3 style={styles.todoTitle}>{todo.title}</h3>
-          <p style={styles.todoPriority}>Priority: {todo.priority}</p>
+          <p style={styles.todoPriority}>Priority: P{todo.priority}</p>
           <p style={styles.todoState}>
             State:
             <select
@@ -153,6 +226,7 @@ const ToDo = () => {
               <option value="Canceled">Canceled</option>
             </select>
           </p>
+          <button style={styles.deleteButton} onClick={() => handleDeleteToDo(todo._id)}>Delete</button>
         </div>
       ))}
       {modalOpen && (
@@ -169,7 +243,7 @@ const ToDo = () => {
             />
             <select
               value={priority}
-              onChange={(e) => setPriority(e.target.value)}
+              onChange={(e) => setPriority(parseInt(e.target.value))}
               style={styles.select}
               required
             >
