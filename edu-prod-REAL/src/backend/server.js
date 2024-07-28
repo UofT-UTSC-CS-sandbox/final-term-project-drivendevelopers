@@ -10,6 +10,7 @@ const Project = require('./Project');
 const Discussion = require('./Discussion');
 const Comment = require('./Comment');
 const Event = require('./Event');
+const Resource = require('./Resource');
 const moment = require('moment-timezone');
 require('dotenv').config();
 
@@ -842,5 +843,67 @@ app.post('/api/events/:eventId/remove-attendee', authenticateToken, async (req, 
 
 const connectionsRoutes = require('../connections');
 app.use('/api', connectionsRoutes);
+
+// Resource library routes
+/**
+ * @route POST /api/resources
+ * @description Add a new resource
+ * @access Private
+ */
+app.post('/api/resources', authenticateToken, async (req, res) => {
+  const { title, link, description, tags } = req.body;
+
+  try {
+    const newResource = new Resource({
+      title,
+      link,
+      description,
+      tags: tags || [], // Ensure tags are an array
+      userId: req.user.id
+    });
+
+    await newResource.save();
+    res.status(201).json({ message: 'Resource added successfully', resource: newResource });
+  } catch (err) {
+    console.error('Error adding resource:', err.message);
+    res.status(500).json({ message: 'Error adding resource' });
+  }
+});
+
+/**
+ * @route GET /api/resources
+ * @description Get all resources
+ * @access Private
+ */
+app.get('/api/resources', authenticateToken, async (req, res) => {
+  try {
+    const resources = await Resource.find().populate('userId', 'email');
+    res.status(200).json(resources);
+  } catch (err) {
+    console.error('Error fetching resources:', err.message);
+    res.status(500).json({ message: 'Error fetching resources' });
+  }
+});
+
+/**
+ * @route DELETE /api/resources/:id
+ * @description Delete a resource by ID
+ * @access Private
+ */
+app.delete('/api/resources/:id', authenticateToken, async (req, res) => {
+  try {
+    const resource = await Resource.findOneAndDelete({ _id: req.params.id, userId: req.user.id });
+
+    if (!resource) {
+      return res.status(404).json({ message: 'Resource not found' });
+    }
+
+    res.status(200).json({ message: 'Resource deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting resource:', err.message);
+    res.status(500).json({ message: 'Error deleting resource' });
+  }
+});
+
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

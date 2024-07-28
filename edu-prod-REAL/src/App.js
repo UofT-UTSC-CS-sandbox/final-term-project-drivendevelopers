@@ -1,4 +1,3 @@
-// src/App.js
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './signupLogin/Login';
@@ -15,7 +14,9 @@ import Discussions from './discussionBoard/Discussions';
 import NewDiscussion from './discussionBoard/NewDiscussion';
 import DiscussionDetail from './discussionBoard/DiscussionDetail';
 import GpaCalculator from './GpaCalculator'; 
-import EventCalendar from './EventCalendar'; // Import the EventCalendar component
+import EventCalendar from './EventCalendar';
+import ResourceLibrary from './resourceLib/ResourceLibrary';
+import AddResource from './resourceLib/AddResource';
 
 const App = () => {
   return (
@@ -36,7 +37,9 @@ const App = () => {
         <Route path="/new-discussion" element={<NewDiscussion />} />
         <Route path="/discussion/:discussionId" element={<DiscussionDetail />} />
         <Route path="/gpa-calc" element={<GpaCalculator />} />
-        <Route path="/eventCalendar" element={<EventCalendar />} /> {/* Add the new route */}
+        <Route path="/eventCalendar" element={<EventCalendar />} />
+        <Route path="/resource-library" element={<ResourceLibrary />} />
+        <Route path="/add-resource" element={<AddResource />} />
       </Routes>
     </Router>
   );
