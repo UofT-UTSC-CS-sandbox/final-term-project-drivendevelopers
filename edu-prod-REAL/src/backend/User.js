@@ -15,6 +15,15 @@ const userSchema = new mongoose.Schema({
   friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   notifications: [{ message: String, date: Date, eventId: mongoose.Schema.Types.ObjectId, inviteId: mongoose.Schema.Types.ObjectId }],
   savedGpas: { type: [{ courses: Array, gpa: String }], default: [] },
+  degreePlanner: [
+    {
+      courseName: String,
+      courseCode: String,
+      credits: Number,
+      semester: String,
+      year: Number,
+    }
+  ],
 });
 
 const User = mongoose.model('User', userSchema);

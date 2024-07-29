@@ -22,6 +22,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = 'mongodb+srv://c01Project:EduProd1@cluster0.ieebveo.mongodb.net/edu-prod?retryWrites=true&w=majority';
 
+
 mongoose.connect(MONGO_URI)
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));
@@ -107,6 +108,62 @@ app.delete('/api/gpa/:id', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+// Course Schema
+const courseSchema = new mongoose.Schema({
+  courseName: String,
+  courseCode: String,
+  credits: Number,
+  semester: String,
+  year: String,
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+});
+
+const Course = mongoose.model('Course', courseSchema);
+
+// Add a course
+app.post('/api/degree-planner', authenticateToken, async (req, res) => {
+  const { courseName, courseCode, credits, semester, year } = req.body;
+
+  try {
+    const newCourse = new Course({
+      courseName,
+      courseCode,
+      credits,
+      semester,
+      year,
+      userId: req.user.id,
+    });
+
+    await newCourse.save();
+    res.status(201).json({ course: newCourse });
+  } catch (error) {
+    console.error('Error adding course:', error);
+    res.status(500).json({ message: 'Failed to add course' });
+  }
+});
+
+// Get all courses for a user
+app.get('/api/degree-planner', authenticateToken, async (req, res) => {
+  try {
+    const courses = await Course.find({ userId: req.user.id });
+    res.status(200).json(courses);
+  } catch (error) {
+    console.error('Error fetching courses:', error);
+    res.status(500).json({ message: 'Failed to fetch courses' });
+  }
+});
+
+// Delete a course
+app.delete('/api/degree-planner/:id', authenticateToken, async (req, res) => {
+  try {
+    await Course.findByIdAndDelete(req.params.id);
+    res.status(200).json({ message: 'Course deleted' });
+  } catch (error) {
+    console.error('Error deleting course:', error);
+    res.status(500).json({ message: 'Failed to delete course' });
+  }
+});
+
 /**
  * @route POST /register
  * @description Register a new user
