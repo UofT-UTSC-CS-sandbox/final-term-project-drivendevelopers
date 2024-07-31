@@ -109,26 +109,22 @@ const Dashboard = () => {
   const [projects, setProjects] = useState([]);
   const [userName, setUserName] = useState('');
   const [friendRequests, setFriendRequests] = useState([]);
+  const [eventInvites, setEventInvites] = useState([]);
   const [recommendedConnections, setRecommendedConnections] = useState([]);
   const [sentRequests, setSentRequests] = useState([]);
-
-  
-
 
   useEffect(() => {
     fetchProfileData();
     fetchProjects();
     fetchFriendRequests();
+    fetchEventInvites();
     fetchRecommendedConnections();
-    
-    
   }, []);
-  
-  
+
   const fetchRecommendedConnections = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/connections', {
+      const response = await fetch('http://localhost:5000/api/recommended-connections', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -142,7 +138,6 @@ const Dashboard = () => {
       console.error('Error fetching recommended connections:', error);
     }
   };
-
 
   const fetchProfileData = async () => {
     try {
@@ -204,15 +199,38 @@ const Dashboard = () => {
       }
 
       const data = await response.json();
-      setFriendRequests(data.map(request => request._id)); // Update the friendRequests state with user IDs
+      setFriendRequests(data); // Update the friendRequests state with the complete data
     } catch (error) {
       console.error('Error fetching friend requests:', error);
     }
   };
+
+  const fetchEventInvites = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5000/api/events/invites', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch event invites');
+      }
+
+      const data = await response.json();
+      setEventInvites(data);
+    } catch (error) {
+      console.error('Error fetching event invites:', error);
+    }
+  };
+
   const handleSendFriendRequest = async (userId) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/friend-request`, {
+      const response = await fetch('http://localhost:5000/api/friend-request', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -241,6 +259,9 @@ const Dashboard = () => {
     localStorage.removeItem('token'); // Clear token from localStorage
     navigate('/'); // Redirect to login page after logout
   };
+
+  const notificationCount = friendRequests.length + eventInvites.length;
+
   return (
     <div style={styles.dashboardContainer}>
       <div style={styles.header}>
@@ -251,31 +272,27 @@ const Dashboard = () => {
           <button style={styles.navButton} onClick={() => handleNavigation('/project-list')}>Projects</button>
           <button style={styles.navButton} onClick={() => handleNavigation('/notifications')}>
             <i className="fas fa-bell"></i>
-            {friendRequests.length > 0 && (
+            {notificationCount > 0 && (
               <span style={{ color: 'red', marginLeft: '5px' }}>
-                {friendRequests.length}
+                {notificationCount}
               </span>
             )}
           </button>
-          <button style={styles.navButton} onClick={() => handleNavigation('/friend-list')}>Friends</button> {/* Add this line */}
+          <button style={styles.navButton} onClick={() => handleNavigation('/friend-list')}>Friends</button> 
           <button style={styles.navButton} onClick={handleLogout}>
             <i className="fas fa-sign-out-alt"></i> Logout
           </button>
         </div>
       </div>
       <h1 style={styles.mainTitle}>Hello, {userName || 'User'}!</h1>
-      <FriendRequestsNotification friendRequests={friendRequests} /> {/* Use the new component here */}
+      <FriendRequestsNotification friendRequests={friendRequests} /> 
       {friendRequests.length > 0 && (
         <div style={{ marginBottom: '20px', color: 'red' }}>
         </div>
-        // if friend request sent from recommended connections, then write you have sent a friend request
       )}
-
-
-
       <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
         <div style={styles.column}>
-        <h2 style={styles.subTitle}>Recommended Connections</h2>
+          <h2 style={styles.subTitle}>Recommended Connections</h2>
           {recommendedConnections.length > 0 ? (
             recommendedConnections.map((user) => (
               <div key={user._id} style={styles.projectCard}>
@@ -290,12 +307,11 @@ const Dashboard = () => {
                 <p style={styles.projectDescription}>Interests: {user.interests.join(', ')}</p>
                 <button
                   onClick={() => handleSendFriendRequest(user._id)}
-                  disabled={friendRequests.includes(user._id)}
+                  disabled={friendRequests.some(request => request._id === user._id)}
                   style={styles.button}
                 >
                   {sentRequests.includes(user._id) ? 'Request Sent' : 'Add Friend'}
                 </button>
-                
               </div>
             ))
           ) : (
@@ -305,8 +321,8 @@ const Dashboard = () => {
         <div style={styles.column}>
           <h2 style={styles.subTitle}>Tools</h2>
           <button style={styles.button} onClick={() => handleNavigation('/eventCalendar')}>Event Calendar</button>
-          <button style={styles.button} onClick={() => handleNavigation('/coursePlanner')}>Discussions</button>
-          <button style={styles.button} onClick={() => handleNavigation('/gpaCalc')}>GPA Calculator</button>
+          <button style={styles.button} onClick={() => handleNavigation('/discussions')}>Discussions</button>
+          <button style={styles.button} onClick={() => handleNavigation('/gpa-calc')}>GPA Calculator</button>
         </div>
         <div style={styles.column}>
           <h2 style={styles.subTitle}>Current Projects</h2>
@@ -315,7 +331,6 @@ const Dashboard = () => {
               <div key={project._id} style={styles.projectCard}>
                 <h3 style={styles.projectTitle}>{project.projectName}</h3>
                 <p style={styles.projectDescription}>{project.description}</p>
-                {/* <p style={styles.projectMembers}>Number of members: {project.members || 1}</p> */}
               </div>
             ))
           ) : (
