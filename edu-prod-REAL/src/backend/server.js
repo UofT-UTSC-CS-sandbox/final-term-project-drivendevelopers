@@ -121,7 +121,11 @@ const courseSchema = new mongoose.Schema({
 
 const Course = mongoose.model('Course', courseSchema);
 
-// Add a course
+/**
+ * @route POST /api/degree-planner
+ * @description Add a new course to the degree planner
+ * @access Private
+ */
 app.post('/api/degree-planner', authenticateToken, async (req, res) => {
   const { courseName, courseCode, credits, semester, year } = req.body;
 
@@ -143,7 +147,11 @@ app.post('/api/degree-planner', authenticateToken, async (req, res) => {
   }
 });
 
-// Get all courses for a user
+/**
+ * @route GET /api/degree-planner
+ * @description Get all courses for the authenticated user
+ * @access Private
+ */
 app.get('/api/degree-planner', authenticateToken, async (req, res) => {
   try {
     const courses = await Course.find({ userId: req.user.id });
@@ -154,7 +162,11 @@ app.get('/api/degree-planner', authenticateToken, async (req, res) => {
   }
 });
 
-// Delete a course
+/**
+ * @route DELETE /api/degree-planner/:id
+ * @description Delete a course by its ID
+ * @access Private
+ */
 app.delete('/api/degree-planner/:id', authenticateToken, async (req, res) => {
   try {
     await Course.findByIdAndDelete(req.params.id);
