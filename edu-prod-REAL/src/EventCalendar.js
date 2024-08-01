@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
@@ -22,11 +22,22 @@ const EventCalendar = () => {
   const [filter, setFilter] = useState('');
 
   const monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
+    'January', 'February', 'March', 'April', 'May', 'June', 
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
-  const fetchCurrentUser = useCallback(async () => {
+  useEffect(() => {
+    fetchCurrentUser();
+    fetchFriends();
+    fetchEvents();
+    fetchEventInvites();
+  }, [filter]);
+
+  useEffect(() => {
+    updateCurrentMonthYear(new Date());
+  }, []);
+
+  const fetchCurrentUser = async () => {
     const token = localStorage.getItem('token');
     try {
       const response = await fetch('http://localhost:5000/api/profile', {
@@ -44,9 +55,9 @@ const EventCalendar = () => {
     } catch (error) {
       console.error('Error fetching current user:', error);
     }
-  }, []);
+  };
 
-  const fetchFriends = useCallback(async () => {
+  const fetchFriends = async () => {
     const token = localStorage.getItem('token');
     try {
       const response = await fetch('http://localhost:5000/api/friends', {
@@ -64,9 +75,9 @@ const EventCalendar = () => {
     } catch (error) {
       console.error('Error fetching friends:', error);
     }
-  }, []);
+  };
 
-  const fetchEvents = useCallback(async () => {
+  const fetchEvents = async () => {
     const token = localStorage.getItem('token');
     try {
       const response = await fetch(`http://localhost:5000/api/events${filter ? `?filter=${filter}` : ''}`, {
@@ -84,7 +95,7 @@ const EventCalendar = () => {
         id: event._id,
         title: event.title,
         start: moment.utc(event.start).local().toDate(),
-        end: moment.utc(event.end).local().toDate(),
+        end: moment.utc(event.end).local().toDate(), 
         createdBy: event.createdBy,
         location: event.location,
         attendees: event.attendees,
@@ -92,9 +103,9 @@ const EventCalendar = () => {
     } catch (error) {
       console.error('Error fetching events:', error);
     }
-  }, [filter]);
+  };
 
-  const fetchEventInvites = useCallback(async () => {
+  const fetchEventInvites = async () => {
     const token = localStorage.getItem('token');
     try {
       const response = await fetch('http://localhost:5000/api/events/invites', {
@@ -112,25 +123,7 @@ const EventCalendar = () => {
     } catch (error) {
       console.error('Error fetching event invites:', error);
     }
-  }, []);
-
-  const updateCurrentMonthYear = useCallback((date) => {
-    const monthIndex = moment(date).month();
-    const year = moment(date).year();
-    const monthName = monthNames[monthIndex];
-    setCurrentMonthYear(`${monthName} ${year}`);
-  }, [monthNames]);
-
-  useEffect(() => {
-    fetchCurrentUser();
-    fetchFriends();
-    fetchEvents();
-    fetchEventInvites();
-  }, [fetchCurrentUser, fetchFriends, fetchEvents, fetchEventInvites]);
-
-  useEffect(() => {
-    updateCurrentMonthYear(new Date());
-  }, [updateCurrentMonthYear]);
+  };
 
   const handleSelect = (info) => {
     setSelectedEvent(null);
@@ -146,7 +139,7 @@ const EventCalendar = () => {
     e.preventDefault();
     const token = localStorage.getItem('token');
     try {
-      const timezone = moment.tz.guess();
+      const timezone = moment.tz.guess(); 
       const start = moment.tz(`${startDate}T${startTime}`, timezone).utc().format();
       const end = moment.tz(`${endDate}T${endTime}`, timezone).utc().format();
       const response = await fetch('http://localhost:5000/api/events', {
@@ -160,7 +153,7 @@ const EventCalendar = () => {
           location: eventLocation,
           start,
           end,
-          timezone,
+          timezone,  
           friends: invitedFriends,
         }),
       });
@@ -173,8 +166,8 @@ const EventCalendar = () => {
       setEvents([...events, {
         id: newEvent._id,
         title: newEvent.title,
-        start: moment.utc(newEvent.start).local().toDate(),
-        end: moment.utc(newEvent.end).local().toDate(),
+        start: moment.utc(newEvent.start).local().toDate(), 
+        end: moment.utc(newEvent.end).local().toDate(), 
         createdBy: newEvent.createdBy,
         location: newEvent.location,
         attendees: newEvent.attendees,
@@ -302,6 +295,13 @@ const EventCalendar = () => {
     }
   };
 
+  const updateCurrentMonthYear = (date) => {
+    const monthIndex = moment(date).month();
+    const year = moment(date).year();
+    const monthName = monthNames[monthIndex];
+    setCurrentMonthYear(`${monthName} ${year}`);
+  };
+
   return (
     <div>
       <div style={{ textAlign: 'center', margin: '20px 0' }}>
@@ -331,7 +331,7 @@ const EventCalendar = () => {
           start: 'today prev,next',
           end: 'dayGridMonth,dayGridWeek,dayGridDay',
         }}
-        initialDate={new Date()}
+        initialDate={new Date()} 
       />
 
       {modalOpen && (
