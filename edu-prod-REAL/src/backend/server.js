@@ -12,6 +12,7 @@ const Comment = require('./Comment');
 const Event = require('./Event');
 const Resource = require('./Resource');
 const moment = require('moment-timezone');
+const ToDo = require('./ToDo');
 require('dotenv').config();
 
 const app = express();
@@ -959,6 +960,91 @@ app.delete('/api/resources/:id', authenticateToken, async (req, res) => {
   } catch (err) {
     console.error('Error deleting resource:', err.message);
     res.status(500).json({ message: 'Error deleting resource' });
+  }
+});
+
+/**
+ * @route GET /api/todos
+ * @description Get all to-do items for the authenticated user, optionally filtered by state
+ * @access Private
+ */
+app.get('/api/todos', authenticateToken, async (req, res) => {
+  const { state } = req.query;
+  try {
+    const query = { userId: req.user.id };
+    if (state) {
+      query.state = state;
+    }
+    const todos = await ToDo.find(query);
+    res.status(200).json(todos);
+  } catch (err) {
+    console.error('Error fetching to-do items:', err.message);
+    res.status(500).json({ message: 'Error fetching to-do items' });
+  }
+});
+
+/**
+ * @route POST /api/todos
+ * @description Add a new to-do item
+ * @access Private
+ */
+app.post('/api/todos', authenticateToken, async (req, res) => {
+  const { title, priority } = req.body;
+
+  try {
+    const newToDo = new ToDo({
+      title,
+      priority,
+      userId: req.user.id,
+    });
+
+    await newToDo.save();
+    res.status(201).json(newToDo);
+  } catch (err) {
+    console.error('Error adding to-do item:', err.message);
+    res.status(500).json({ message: 'Error adding to-do item' });
+  }
+});
+
+/**
+ * @route PUT /api/todos/:id
+ * @description Update a to-do item's state
+ * @access Private
+ */
+app.put('/api/todos/:id', authenticateToken, async (req, res) => {
+  const { state } = req.body;
+
+  try {
+    const todo = await ToDo.findById(req.params.id);
+    if (!todo) {
+      return res.status(404).json({ message: 'To-do item not found' });
+    }
+
+    todo.state = state;
+    await todo.save();
+    res.status(200).json(todo);
+  } catch (err) {
+    console.error('Error updating to-do item:', err.message);
+    res.status(500).json({ message: 'Error updating to-do item' });
+  }
+});
+
+/**
+ * @route DELETE /api/todos/:id
+ * @description Delete a to-do item by ID
+ * @access Private
+ */
+app.delete('/api/todos/:id', authenticateToken, async (req, res) => {
+  try {
+    const todo = await ToDo.findByIdAndDelete(req.params.id);
+    if (!todo) {
+      return res.status(404).json({ message: 'To-do item not found' });
+    }
+
+    res.status(200).json({ message: 'To-do item deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting to-do item:', err.message);
+    res.status(500).json({ message: 'Error deleting to-do item' });
   }
 });
 
