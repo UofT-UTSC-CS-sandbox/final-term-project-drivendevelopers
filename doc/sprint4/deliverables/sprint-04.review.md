@@ -11,6 +11,9 @@
 **During this iteration, our team focused on implementing key features for the Edu Prodigi platform: Shared Resource Library, To Do List, and Degree Planner.**
 
 ---
+#### Participants
+**Hamza Khalid, Tammam Makki, Harish Thevakumaran
+
 
 #### Decisions that turned out well
 
