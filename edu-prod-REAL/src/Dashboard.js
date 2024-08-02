@@ -324,6 +324,8 @@ const Dashboard = () => {
           <button style={styles.button} onClick={() => handleNavigation('/discussions')}>Discussions</button>
           <button style={styles.button} onClick={() => handleNavigation('/gpa-calc')}>GPA Calculator</button>
           <button style={styles.button} onClick={() => handleNavigation('/resource-library')}>Resource Library</button>
+          <button style={styles.button} onClick={() => handleNavigation('/degree-planner')}>Degree Planner</button>
+
           <button style={styles.button} onClick={() => handleNavigation('/to-do')}>To Do List</button>
         </div>
         <div style={styles.column}>

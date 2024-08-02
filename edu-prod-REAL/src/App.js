@@ -17,6 +17,8 @@ import GpaCalculator from './GpaCalculator';
 import EventCalendar from './EventCalendar';
 import ResourceLibrary from './resourceLib/ResourceLibrary';
 import AddResource from './resourceLib/AddResource';
+import DegreePlanner from './DegreePlanner';
+
 import ToDo from './ToDo'; // Import the new ToDo component
 
 const App = () => {
@@ -41,6 +43,8 @@ const App = () => {
         <Route path="/eventCalendar" element={<EventCalendar />} />
         <Route path="/resource-library" element={<ResourceLibrary />} />
         <Route path="/add-resource" element={<AddResource />} />
+        <Route path="/degree-planner" element={<DegreePlanner />} />
+
         <Route path="/to-do" element={<ToDo />} /> {/* Add the ToDo route */}
       </Routes>
     </Router>
