@@ -1,7 +1,7 @@
 # Edu Prodigi/Driven Developers
 ## Iteration 04 - Sprint Review & Retrospect
 
-**When:** August 2nd, 2024
+**When:** August 2nd, 2024 at 12:00PM
 **Where:** Online via Zoom  
 
 ---
