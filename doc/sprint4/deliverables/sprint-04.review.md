@@ -101,4 +101,3 @@ Hamza Khalid, Tamam Makki, Harish Thevakumaran
 **Accurate Feature Complexity Assessment:**
 
 - Assess feature complexity more accurately during planning to avoid unnecessary complications
-- 
