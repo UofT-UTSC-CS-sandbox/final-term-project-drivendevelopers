@@ -12,7 +12,7 @@
 
 ---
 #### Participants
-**Hamza Khalid, Tammam Makki, Harish Thevakumaran
+Hamza Khalid, Tammam Makki, Harish Thevakumaran
 
 
 #### Decisions that turned out well
