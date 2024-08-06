@@ -19,7 +19,7 @@ build_image:
   services:
     - docker:20.10.7-dind
   script:
-    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG .
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG edu-prod-REAL/.
   only:
     - main
 
@@ -27,6 +27,7 @@ test_image:
   stage: test
   image: node:14
   script:
+    - cd edu-prod-REAL
     - npm install
     - npm test
   only:
