@@ -1,6 +1,6 @@
 # Overview
 
-WelcomeTest to EduProdigi! This application is designed to create a vibrant online community for academic students, allowing for engage in meaninful and open connections, collaborate on projects, promote academic
+Welcome to EduProdigi! This application is designed to create a vibrant online community for academic students, allowing for engage in meaninful and open connections, collaborate on projects, promote academic
 interests and growth. Engineered with the needs of students in mind, EduProdigi app offers a comprehensive and useful features for the students to assist in the expansion of their professional
 networks, develop experience in collaboration projects, and finally make use of the university experience.
 
