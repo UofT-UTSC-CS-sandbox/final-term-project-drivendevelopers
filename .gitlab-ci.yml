@@ -11,14 +11,13 @@ stages:
   - deploy
 
 before_script:
-  - apk update && apk add bash
   - docker info
 
 build_image:
   stage: build
-  image: docker:latest
+  image: docker:20.10.7-dind
   services:
-    - docker:dind
+    - docker:20.10.7-dind
   script:
     - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG .
   only:
@@ -35,9 +34,9 @@ test_image:
 
 push_image:
   stage: push
-  image: docker:latest
+  image: docker:20.10.7-dind
   services:
-    - docker:dind
+    - docker:20.10.7-dind
   script:
     - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
@@ -46,9 +45,9 @@ push_image:
 
 deploy_image:
   stage: deploy
-  image: docker:latest
+  image: docker:20.10.7-dind
   services:
-    - docker:dind
+    - docker:20.10.7-dind
   script:
     - chmod +x deploy.sh
     - ./deploy.sh
