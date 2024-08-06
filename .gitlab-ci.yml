@@ -22,7 +22,7 @@ build_image:
 
 test_image:
   stage: test
-  image: node:14
+  image: node:18
   script:
     - cd edu-prod-REAL
     - npm install
