@@ -1,28 +1,33 @@
+variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: "/certs"
+  CI_REGISTRY: docker.io
+  CI_REGISTRY_IMAGE: docker.io/htheva/eduprodigi
+
 stages:
-  - install
-  - test
   - build
-  - deploy
+  - push
 
-install_dependencies:
-  stage: install
-  image: node:14
-  script:
-    - npm install
+before_script:
+  - docker info
 
-test:
-  stage: test
-  image: node:14
-  script:
-    - npm test
-
-build:
+build_image:
   stage: build
-  image: node:14
+  image: docker:latest
+  services:
+    - docker:dind
   script:
-    - npm run build
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG .
+  only:
+    - main
 
-deploy:
-  stage: deploy
+push_image:
+  stage: push
+  image: docker:latest
+  services:
+    - docker:dind
   script:
-    - echo "Deploy to your hosting environment"
+    - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  only:
+    - main
