@@ -10,9 +10,6 @@ stages:
   - push
   - deploy
 
-before_script:
-  - docker info
-
 build_image:
   stage: build
   image: docker:20.10.7-dind
@@ -50,7 +47,7 @@ deploy_image:
   services:
     - docker:20.10.7-dind
   script:
-    - chmod +x deploy.sh
-    - ./deploy.sh
+    - chmod +x edu-prod-REAL/deploy.sh
+    - edu-prod-REAL/deploy.sh
   only:
     - main
