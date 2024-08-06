@@ -6,7 +6,9 @@ variables:
 
 stages:
   - build
+  - test
   - push
+  - deploy
 
 before_script:
   - docker info
@@ -21,6 +23,15 @@ build_image:
   only:
     - main
 
+test_image:
+  stage: test
+  image: node:14
+  script:
+    - npm install
+    - npm test
+  only:
+    - main
+
 push_image:
   stage: push
   image: docker:latest
@@ -29,5 +40,16 @@ push_image:
   script:
     - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  only:
+    - main
+
+deploy_image:
+  stage: deploy
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - chmod +x deploy.sh
+    - ./deploy.sh
   only:
     - main
