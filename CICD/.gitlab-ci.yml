@@ -18,7 +18,7 @@ build_image:
   script:
     - ulimit -u 1024
     - cd edu-prod-REAL  # Navigate to the directory containing the Dockerfile
-    - docker build -t $CI_REGISTRY_IMAGE:latest .
+    - docker build -f ../CICD/Dockerfile -t $CI_REGISTRY_IMAGE:latest .
     - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
     - docker push $CI_REGISTRY_IMAGE:latest
   only:
@@ -30,7 +30,7 @@ test_image:
   script:
     - cd edu-prod-REAL
     - npm install
-    - NODE_OPTIONS=--experimental-vm-modules npm test
+    - NODE_OPTIONS=--experimental-vm-modules jest --config ../CICD/jest.config.js
   only:
     - main
 
@@ -53,9 +53,7 @@ deploy_image:
   services:
     - docker:20.10.7-dind
   script:
-    - docker stop eduprodigi_container || true
-    - docker rm eduprodigi_container || true
-    - docker run -d --network="host" --name eduprodigi_container $CI_REGISTRY_IMAGE:latest
+    - ../CICD/deploy.sh
   only:
     - main
   environment:
