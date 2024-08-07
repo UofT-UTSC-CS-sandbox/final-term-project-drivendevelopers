@@ -1,6 +1,9 @@
 # Use the official Node.js image as a base
 FROM node:14
 
+# Install bash
+RUN apt-get update && apt-get install -y bash
+
 # Create and change to the app directory
 WORKDIR /app
 

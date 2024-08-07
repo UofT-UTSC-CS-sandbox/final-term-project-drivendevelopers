@@ -49,11 +49,11 @@ push_image:
 
 deploy_image:
   stage: deploy
-  image: docker:20.10.7-dind
+  image: bash:latest  
   services:
     - docker:20.10.7-dind
   script:
     - chmod +x edu-prod-REAL/deploy.sh
-    - edu-prod-REAL/deploy.sh
+    - ./edu-prod-REAL/deploy.sh
   only:
     - main
