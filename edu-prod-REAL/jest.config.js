@@ -2,7 +2,7 @@ module.exports = {
   testEnvironment: 'jsdom',
   transform: {
     "^.+\\.[tj]sx?$": "babel-jest",
-    "^.+\\.mjs$": "babel-jest", // Add this line to transform .mjs files
+    "^.+\\.mjs$": "babel-jest", // Ensure .mjs files are transformed
   },
   transformIgnorePatterns: [
     "/node_modules/(?!axios|preact|@fullcalendar)"
@@ -13,7 +13,7 @@ module.exports = {
     "^preact$": require.resolve('preact'),
     "^preact-render-to-string$": require.resolve('preact-render-to-string')
   },
-  extensionsToTreatAsEsm: [".ts", ".tsx", ".mjs"], // Add .mjs here
+  extensionsToTreatAsEsm: [".ts", ".tsx"], // Remove .mjs
   globals: {
     'ts-jest': {
       useESM: true
