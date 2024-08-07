@@ -1,23 +1,11 @@
 module.exports = {
-  testEnvironment: 'jsdom',
+  extensionsToTreatAsEsm: ['.ts', '.tsx'],
   transform: {
-    "^.+\\.[tj]sx?$": "babel-jest",
-    "^.+\\.mjs$": "babel-jest", // Add this line to transform .mjs files
+      '^.+\\.tsx?$': 'ts-jest',
+      '^.+\\.jsx?$': 'babel-jest',
+      '^.+\\.mjs$': 'babel-jest'
   },
   transformIgnorePatterns: [
-    "/node_modules/(?!axios|preact|@fullcalendar)"
-  ],
-  moduleNameMapper: {
-    "^axios$": require.resolve('axios'),
-    "\\.(css|less|scss|sass)$": "identity-obj-proxy",
-    "^preact$": require.resolve('preact'),
-    "^preact-render-to-string$": require.resolve('preact-render-to-string')
-  },
-  extensionsToTreatAsEsm: [".ts", ".tsx", ".mjs"], // Add .mjs here
-  globals: {
-    'ts-jest': {
-      useESM: true
-    }
-  },
-  setupFilesAfterEnv: ["<rootDir>/src/setupTests.js"]
+      '/node_modules/(?!axios|preact|@fullcalendar)'
+  ]
 };
