@@ -29,10 +29,8 @@ test_image:
     - cd edu-prod-REAL
     - npm install
     - npm test
-  when: never
   only:
     - main
-
 
 push_image:
   stage: push
