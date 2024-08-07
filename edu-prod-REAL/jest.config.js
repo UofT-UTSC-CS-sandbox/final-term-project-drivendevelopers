@@ -18,5 +18,5 @@ module.exports = {
       useESM: true
     }
   },
-  setupFiles: ["<rootDir>/src/setupTests.js"]
+  setupFilesAfterEnv: ["<rootDir>/src/setupTests.js"] // Updated line
 };
