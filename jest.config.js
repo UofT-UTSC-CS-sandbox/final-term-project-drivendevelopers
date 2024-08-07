@@ -1,18 +1,19 @@
+// jest.config.js
 module.exports = {
+    testEnvironment: 'jsdom',
     transform: {
-      "^.+\\.[tj]sx?$": ["babel-jest", { configFile: "./babel.config.js" }],
+      "^.+\\.[tj]sx?$": "babel-jest",
     },
     transformIgnorePatterns: [
-      "/node_modules/(?!axios|preact).+\\.js$",
+      "/node_modules/(?!(axios)/)",
     ],
     moduleNameMapper: {
-      "^axios$": require.resolve("axios"),
+      '^axios$': require.resolve('axios'),
       "\\.(css|less|scss|sass)$": "identity-obj-proxy",
     },
-    testEnvironment: "jsdom",
     extensionsToTreatAsEsm: [".ts", ".tsx", ".js", ".jsx"],
     globals: {
-      "ts-jest": {
+      'ts-jest': {
         useESM: true,
       },
     },
