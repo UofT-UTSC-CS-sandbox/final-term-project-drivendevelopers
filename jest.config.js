@@ -6,6 +6,7 @@ module.exports = {
       "/node_modules/(?!(axios)/)",
     ],
     moduleNameMapper: {
+      '^axios$': require.resolve('axios'),
       "\\.(css|less|scss|sass)$": "identity-obj-proxy",
     },
     testEnvironment: "jsdom",
