@@ -32,7 +32,6 @@ test_image:
   only:
     - main
 
-
 push_image:
   stage: push
   image: docker:20.10.7-dind
