@@ -17,6 +17,7 @@ build_image:
     - docker:20.10.7-dind
   script:
     - ulimit -u 1024
+    - cd edu-prod-REAL  # Navigate to the directory containing the Dockerfile
     - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG .
   only:
     - main
