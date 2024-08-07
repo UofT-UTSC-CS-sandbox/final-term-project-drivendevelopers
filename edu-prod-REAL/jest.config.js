@@ -18,5 +18,5 @@ module.exports = {
       useESM: true
     }
   },
-  setupFiles: ["<rootDir>/setupTests.js"]
+  setupFiles: ["<rootDir>/src/setupTests.js"]
 };
