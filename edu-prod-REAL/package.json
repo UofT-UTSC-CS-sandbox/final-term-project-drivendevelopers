@@ -28,7 +28,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "jest --config jest.config.js",
+    "test": "jest --config jest.config.js --transformIgnorePatterns \"node_modules/(?!axios|preact|@fullcalendar)\"",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
