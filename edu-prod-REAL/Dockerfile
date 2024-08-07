@@ -8,16 +8,16 @@ RUN apt-get update && apt-get install -y bash
 WORKDIR /app
 
 # Copy package.json and package-lock.json
-COPY package*.json ./
+COPY edu-prod-REAL/package*.json ./
 
 # Copy Babel and Jest configurations from the CICD directory
-COPY ../CICD/babel.config.js ../CICD/jest.config.js ./
+COPY CICD/babel.config.js CICD/jest.config.js ./
 
 # Install dependencies
 RUN npm install
 
 # Copy the rest of the application code
-COPY . .
+COPY edu-prod-REAL/ ./
 
 # Expose the port the app runs on
 EXPOSE 3000
