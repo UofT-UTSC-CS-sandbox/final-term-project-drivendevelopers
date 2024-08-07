@@ -2,7 +2,7 @@ variables:
   DOCKER_DRIVER: overlay2
   DOCKER_TLS_CERTDIR: "/certs"
   CI_REGISTRY: docker.io
-  CI_REGISTRY_IMAGE: docker.io/htheva/ediprodigi
+  CI_REGISTRY_IMAGE: docker.io/htheva/eduprodigi
 
 stages:
   - build
