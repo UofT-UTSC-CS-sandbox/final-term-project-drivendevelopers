@@ -2,7 +2,7 @@ variables:
   DOCKER_DRIVER: overlay2
   DOCKER_TLS_CERTDIR: "/certs"
   CI_REGISTRY: docker.io
-  CI_REGISTRY_IMAGE: docker.io/<your-dockerhub-username>/<your-image-name>
+  CI_REGISTRY_IMAGE: docker.io/htheva/ediprodigi
 
 stages:
   - build
@@ -19,6 +19,8 @@ build_image:
     - ulimit -u 1024
     - cd edu-prod-REAL  # Navigate to the directory containing the Dockerfile
     - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG .
+    - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
   only:
     - main
 
