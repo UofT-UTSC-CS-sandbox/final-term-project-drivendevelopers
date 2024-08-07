@@ -12,10 +12,11 @@ stages:
 
 build_image:
   stage: build
-  image: docker:20.10.7
+  image: docker:20.10.7-dind
   services:
     - docker:20.10.7-dind
   script:
+    - ulimit -u 1024
     - cd edu-prod-REAL  # Navigate to the directory containing the Dockerfile
     - docker build -t $CI_REGISTRY_IMAGE:latest .
     - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
@@ -35,7 +36,7 @@ test_image:
 
 push_image:
   stage: push
-  image: docker:20.10.7
+  image: docker:20.10.7-dind
   services:
     - docker:20.10.7-dind
   script:
@@ -48,11 +49,13 @@ push_image:
 
 deploy_image:
   stage: deploy
-  image: docker:20.10.7
+  image: docker:20.10.7-dind
   services:
     - docker:20.10.7-dind
   script:
-    - chmod +x edu-prod-REAL/deploy.sh
-    - ./edu-prod-REAL/deploy.sh
+    - docker run -d -p 3000:3000 --name eduprodigi_container $CI_REGISTRY_IMAGE:latest
   only:
     - main
+  environment:
+    name: production
+    url: http://<server-ip>:3000
