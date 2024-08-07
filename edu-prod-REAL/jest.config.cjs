@@ -1,10 +1,10 @@
 module.exports = {
   testEnvironment: 'jsdom',
   transform: {
-    "^.+\\.[tj]sx?$": "babel-jest",
+    "^.+\\.[tj]sx?$": "babel-jest"
   },
   transformIgnorePatterns: [
-    "/node_modules/(?!(axios|preact|@fullcalendar)/)"
+    "/node_modules/(?!axios|preact|@fullcalendar)"
   ],
   moduleNameMapper: {
     "^axios$": require.resolve('axios'),
@@ -13,7 +13,7 @@ module.exports = {
   extensionsToTreatAsEsm: [".ts", ".tsx"],
   globals: {
     'ts-jest': {
-      useESM: true,
-    },
-  },
+      useESM: true
+    }
+  }
 };
