@@ -4,7 +4,7 @@ module.exports = {
     "^.+\\.[tj]sx?$": "babel-jest",
   },
   transformIgnorePatterns: [
-    "/node_modules/(?!(axios|preact)/)"
+    "/node_modules/(?!(axios|preact|@fullcalendar)/)"
   ],
   moduleNameMapper: {
     "^axios$": require.resolve('axios'),
