@@ -7,8 +7,8 @@ WORKDIR /app
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Copy Babel and Jest configurations from the parent directory
-COPY ../babel.config.js ../jest.config.js ./
+# Copy Babel and Jest configurations
+COPY babel.config.js jest.config.js ./
 
 # Install dependencies
 RUN npm install
